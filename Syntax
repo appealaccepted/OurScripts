@@ -1,1 +1,553 @@
--- Paste
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local RandomTitle = math.random(1,3)
+local SetTitle = ""
+
+if RandomTitle == 1 then
+	SetTitle = "Porn Hub"
+elseif RandomTitle == 2 then
+	SetTitle = "X Videos"
+elseif RandomTitle == 3 then
+	SetTitle = "Dylin im gonna rape you"
+end
+
+Rayfield:Notify({
+	Title = "Tha Bronx 2",
+	Content = "Made by lake9zup and Peterrrrt with luv 🐦",
+	Duration = 6.5,
+	Image = 4483362458,
+})
+
+local Variables = {
+	ESP = false,
+	SilentAim = false,
+}
+
+local TheBoxColor = Color3.fromRGB(255, 0, 0)
+local TheBoxThickness = 1
+
+local Settings = {
+	Box_Color = TheBoxColor,
+	Tracer_Color = Color3.fromRGB(255, 0, 0),
+	Tracer_Thickness = 1,
+	Box_Thickness = TheBoxThickness,
+	Tracer_Origin = "Bottom", -- Middle or Bottom if FollowMouse is on this won't matter...
+	Tracer_FollowMouse = false,
+	Tracers = false
+}
+local Team_Check = {
+	TeamCheck = false, -- if TeamColor is on this won't matter...
+	Green = Color3.fromRGB(0, 255, 0),
+	Red = Color3.fromRGB(255, 0, 0)
+}
+local TeamColor = false
+
+local function ESPTing(mode)
+	if (mode == "Start") then
+
+		local player = game:GetService("Players").LocalPlayer
+		local camera = game:GetService("Workspace").CurrentCamera
+		local mouse = player:GetMouse()
+
+		local function NewQuad(thickness, color)
+			local quad = Drawing.new("Quad")
+			quad.Visible = false
+			quad.PointA = Vector2.new(0,0)
+			quad.PointB = Vector2.new(0,0)
+			quad.PointC = Vector2.new(0,0)
+			quad.PointD = Vector2.new(0,0)
+			quad.Color = color
+			quad.Filled = false
+			quad.Thickness = thickness
+			quad.Transparency = 1
+			return quad
+		end
+
+		local function NewLine(thickness, color)
+			local line = Drawing.new("Line")
+			line.Visible = false
+			line.From = Vector2.new(0, 0)
+			line.To = Vector2.new(0, 0)
+			line.Color = color 
+			line.Thickness = thickness
+			line.Transparency = 1
+			return line
+		end
+
+		local function Visibility(state, lib)
+			for u, x in pairs(lib) do
+				x.Visible = state
+			end
+		end
+
+		local function ToColor3(col) --Function to convert, just cuz c;
+			local r = col.r --Red value
+			local g = col.g --Green value
+			local b = col.b --Blue value
+			return Color3.new(r,g,b); --Color3 datatype, made of the RGB inputs
+		end
+
+		local black = Color3.fromRGB(0, 0 ,0)
+		local function ESP(plr)
+			local library = {
+				--//Tracer and Black Tracer(black border)
+				blacktracer = NewLine(Settings.Tracer_Thickness*2, black),
+				tracer = NewLine(Settings.Tracer_Thickness, Settings.Tracer_Color),
+				--//Box and Black Box(black border)
+				black = NewQuad(Settings.Box_Thickness*2, black),
+				box = NewQuad(Settings.Box_Thickness, Settings.Box_Color),
+				--//Bar and Green Health Bar (part that moves up/down)
+				healthbar = NewLine(3, black),
+				greenhealth = NewLine(1.5, black)
+			}
+
+			local function Colorize(color)
+				for u, x in pairs(library) do
+					if x ~= library.healthbar and x ~= library.greenhealth and x ~= library.blacktracer and x ~= library.black then
+						x.Color = color
+					end
+				end
+			end
+
+			local function Updater()
+				local connection
+				connection = game:GetService("RunService").RenderStepped:Connect(function()
+					if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil and Variables.ESP then
+						local HumPos, OnScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+						if OnScreen then
+							local head = camera:WorldToViewportPoint(plr.Character.Head.Position)
+							local DistanceY = math.clamp((Vector2.new(head.X, head.Y) - Vector2.new(HumPos.X, HumPos.Y)).magnitude, 2, math.huge)
+
+							local function Size(item)
+								item.PointA = Vector2.new(HumPos.X + DistanceY, HumPos.Y - DistanceY*2)
+								item.PointB = Vector2.new(HumPos.X - DistanceY, HumPos.Y - DistanceY*2)
+								item.PointC = Vector2.new(HumPos.X - DistanceY, HumPos.Y + DistanceY*2)
+								item.PointD = Vector2.new(HumPos.X + DistanceY, HumPos.Y + DistanceY*2)
+							end
+							Size(library.box)
+							Size(library.black)
+
+							--//Tracer 
+							if Settings.Tracers then
+								if Settings.Tracer_Origin == "Middle" then
+									library.tracer.From = camera.ViewportSize*0.5
+									library.blacktracer.From = camera.ViewportSize*0.5
+								elseif Settings.Tracer_Origin == "Bottom" then
+									library.tracer.From = Vector2.new(camera.ViewportSize.X*0.5, camera.ViewportSize.Y) 
+									library.blacktracer.From = Vector2.new(camera.ViewportSize.X*0.5, camera.ViewportSize.Y)
+								end
+								if Settings.Tracer_FollowMouse then
+									library.tracer.From = Vector2.new(mouse.X, mouse.Y+36)
+									library.blacktracer.From = Vector2.new(mouse.X, mouse.Y+36)
+								end
+								library.tracer.To = Vector2.new(HumPos.X, HumPos.Y + DistanceY*2)
+								library.blacktracer.To = Vector2.new(HumPos.X, HumPos.Y + DistanceY*2)
+							else 
+								library.tracer.From = Vector2.new(0, 0)
+								library.blacktracer.From = Vector2.new(0, 0)
+								library.tracer.To = Vector2.new(0, 0)
+								library.blacktracer.To = Vector2.new(0, 02)
+							end
+
+							--// Health Bar
+							local d = (Vector2.new(HumPos.X - DistanceY, HumPos.Y - DistanceY*2) - Vector2.new(HumPos.X - DistanceY, HumPos.Y + DistanceY*2)).magnitude 
+							local healthoffset = plr.Character.Humanoid.Health/plr.Character.Humanoid.MaxHealth * d
+
+							library.greenhealth.From = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2)
+							library.greenhealth.To = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2 - healthoffset)
+
+							library.healthbar.From = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2)
+							library.healthbar.To = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y - DistanceY*2)
+
+							local green = Color3.fromRGB(0, 255, 0)
+							local red = Color3.fromRGB(255, 0, 0)
+
+							library.greenhealth.Color = red:lerp(green, plr.Character.Humanoid.Health/plr.Character.Humanoid.MaxHealth);
+
+							if Team_Check.TeamCheck then
+								if plr.TeamColor == player.TeamColor then
+									Colorize(Team_Check.Green)
+								else 
+									Colorize(Team_Check.Red)
+								end
+							else 
+								library.tracer.Color = Settings.Tracer_Color
+								library.box.Color = Settings.Box_Color
+							end
+							if TeamColor == true then
+								Colorize(plr.TeamColor.Color)
+							end
+							Visibility(true, library)
+						else 
+							Visibility(false, library)
+						end
+					else 
+						Visibility(false, library)
+						if game.Players:FindFirstChild(plr.Name) == nil then
+							connection:Disconnect()
+						end
+					end
+				end)
+			end
+			coroutine.wrap(Updater)()
+		end
+
+		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
+			if v.Name ~= player.Name then
+				coroutine.wrap(ESP)(v)
+			end
+		end
+
+		game.Players.PlayerAdded:Connect(function(newplr)
+			if newplr.Name ~= player.Name then
+				coroutine.wrap(ESP)(newplr)
+			end
+		end)
+	end
+end
+
+local Window = Rayfield:CreateWindow({
+	Name = "🔫 Tha Bronx 2 🔫",
+	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	LoadingTitle = SetTitle,
+	LoadingSubtitle = "By lake9zup and Peterrrrt",
+	Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+	DisableRayfieldPrompts = false,
+	DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil, -- Create a custom folder for your hub/game
+		FileName = "Big Hub"
+	},
+
+	Discord = {
+		Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+		Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+	},
+
+	KeySystem = false, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Tha Bronx 2 KeySystem",
+		Subtitle = "Key System",
+		Note = "Join the discord for they key : invitehere", -- Use this to tell the user how to get a key
+		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+	}
+})
+
+local MainTab = Window:CreateTab("Combat", 4483362458) -- Title, Image
+
+local Section = MainTab:CreateSection("Aim")
+local Toggle = MainTab:CreateToggle({
+	Name = "Silent Aim",
+	CurrentValue = false,
+	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		Variables.SilentAim = Value
+		warn(Value,"nigger")
+		
+	end,
+})
+
+local Section = MainTab:CreateSection("Visuals")
+local Toggle = MainTab:CreateToggle({
+	Name = "Outline",
+	CurrentValue = false,
+	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		warn(Value)
+		Variables.ESP = Value
+		ESPTing("Start")
+	end,
+})
+
+local Toggle = MainTab:CreateToggle({
+	Name = "Username",
+	CurrentValue = false,
+	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		warn(Value)
+		Variables.ESP = Value
+		ESPTing("Start")
+	end,
+})
+
+local Toggle = MainTab:CreateToggle({
+	Name = "Tools",
+	CurrentValue = false,
+	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		warn(Value)
+		Variables.ESP = Value
+		ESPTing("Start")
+	end,
+})
+
+local SecondTab = Window:CreateTab("Teleports", 4483362458) -- Title, Image
+local Section = SecondTab:CreateSection("Main")
+local Button = SecondTab:CreateButton({
+	Name = "Rice Buy",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(36892.7188, 14073.7383, 5841.62939, -0.499959469, 0, 0.866048813, 0, 1, 0, -0.866048813, 0, -0.499959469)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Rice Sell",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(81062.2422, 133135.266, 169.988525, 0.766061246, -0, -0.642767608, 0, 1, -0, 0.642767608, 0, 0.766061246)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Gun Shop 1",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(92981.3281, 122096.047, 17026.7617, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		YourRoot.CFrame = LocationToTP2 
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Gun Shop 2",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(66190.1094, 123614.633, 5760.98242, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Exotic Guns",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(60807.4648, 87610.8516, -333.445557, -0.13324976, -0.0112454034, -0.991018713, -0.0835598409, 0.996502757, -7.23972917e-05, 0.987553656, 0.0827997103, -0.133723378)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Laundry",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-990.995728, 254.278625, -688.398132, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Bank",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-180.265167, 288.021149, -1200.48596, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Off The Radar",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(93430.7422, 14481.3281, 565.520691, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "StarBucks",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-1616.68677, 253.216782, -1129.86658, 0, 0, -1, 0, 1, 0, 1, 0, 0)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Dealership",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-428.195618, 252.47821, -1255.93994, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Drip Store",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(67463.0312, 10487.2646, 538.28418, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Exotic Dealer",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-1518.91614, 267.96759, -983.473572, 0.999397933, -0.0346962325, 0, 0.0346962325, 0.999397933, 0, 0, 0, 1)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Kfc",
+	Callback = function()
+		local yr = game.Players.LocalPlayer.Character.HumanoidRootPart
+		local tp2 = CFrame.new(-956.771484, 251.26651, -805.67218, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+		yr.CFrame = tp2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Bank Tools",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-477.053711, 327.529999, -571.703552, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Random Storage",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-479.087097, 255.491943, -391.232391, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+
+local ThirdTab = Window:CreateTab("Misc", 4483362458) -- Title, Image
+local Section = ThirdTab:CreateSection("Main")
+local Button = ThirdTab:CreateButton({
+	Name = "Instant ProximityPrompt",
+	Callback = function()
+		local function changeAllProximityPromptsHoldDuration(newHoldDuration)
+
+			for _, object in pairs(game:GetDescendants()) do
+
+				if object:IsA("ProximityPrompt") then
+
+					object.HoldDuration = newHoldDuration
+				end
+			end
+		end
+
+		changeAllProximityPromptsHoldDuration(0)
+	end,
+})
+
+local Button = ThirdTab:CreateButton({
+	Name = "Inf Stamina",
+	Callback = function()
+		game.Players.LocalPlayer.PlayerGui.Run.Frame.Frame.Frame["StaminaBarScript"].Disabled = true
+	end,
+})
+
+local Button = ThirdTab:CreateButton({
+	Name = "Inf Sleep",
+	Callback = function()
+		game.Players.LocalPlayer.PlayerGui.SleepGui.Frame.sleep.SleepBar["sleepScript"].Disabled = true
+	end,
+})
+
+local Button = ThirdTab:CreateButton({
+	Name = "Inf Hunger",
+	Callback = function()
+		game.Players.LocalPlayer.PlayerGui.Hunger.Frame.Frame.Frame["HungerBarScript"].Disabled = true
+	end,
+})
+
+local Section = ThirdTab:CreateSection("Player")
+local Slider = ThirdTab:CreateSlider({
+	Name = "WalkSpeed",
+	Range = {0, 300},
+	Increment = 10,
+	Suffix = "Speed",
+	CurrentValue = 0,
+	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+	end,
+})
+
+local Slider = ThirdTab:CreateSlider({
+	Name = "JumpPower",
+	Range = {0, 300},
+	Increment = 10,
+	Suffix = "Power",
+	CurrentValue = 10,
+	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
+	end,
+})
+
+
+local Section = ThirdTab:CreateSection("Gui")
+local Button = ThirdTab:CreateButton({
+	Name = "Market Gui",
+	Callback = function()
+		game.Players.LocalPlayer.PlayerGui["Bronx Market 2"].Enabled = true 
+	end,
+})
+
+local Button = ThirdTab:CreateButton({
+	Name = "Exotic Gui",
+	Callback = function()
+		game.Players.LocalPlayer.PlayerGui["Exotic Shop"].Enabled = true
+	end,
+})
+
+local Button = ThirdTab:CreateButton({
+	Name = "Shop Gui",
+	Callback = function()
+		game.Players.LocalPlayer.PlayerGui["ShopGUI"].Enabled = true
+	end,
+})
+
+local FourthTab = Window:CreateTab("Buys", 4483362458) -- Title, Image
+local Section = FourthTab:CreateSection("Food")
+local Button = FourthTab:CreateButton({
+	Name = "KFC",
+	Callback = function()
+		
+	end,
+})
