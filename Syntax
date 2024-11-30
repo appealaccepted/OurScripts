@@ -247,9 +247,31 @@ local Toggle = MainTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		Variables.SilentAim.Enabled = Value
+		Variables.SilentAim = Value
 		warn(Value,"nigger")
+		
+	end,
+})
 
+local Toggle = MainTab:CreateToggle({
+	Name = "Team Check",
+	CurrentValue = false,
+	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		Variables.SilentAim = Value
+		warn(Value,"nigger")
+		
+	end,
+})
+
+local Toggle = MainTab:CreateToggle({
+	Name = "Friend Check",
+	CurrentValue = false,
+	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		Variables.SilentAim = Value
+		warn(Value,"nigger")
+		
 	end,
 })
 
@@ -260,7 +282,7 @@ local Toggle = MainTab:CreateToggle({
 	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
 		warn(Value)
-		Variables.ESPStuff.Outline = Value
+		Variables.ESP = Value
 		ESPTing("Start")
 	end,
 })
@@ -271,8 +293,8 @@ local Toggle = MainTab:CreateToggle({
 	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
 		warn(Value)
-		Variables.ESPStuff.Name = Value
-		
+		Variables.ESP = Value
+		ESPTing("Start")
 	end,
 })
 
@@ -282,8 +304,8 @@ local Toggle = MainTab:CreateToggle({
 	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
 		warn(Value)
-		Variables.ESPStuff.Tools = Value
-		
+		Variables.ESP = Value
+		ESPTing("Start")
 	end,
 })
 
@@ -547,7 +569,7 @@ local FourthTab = Window:CreateTab("Buys", 4483362458) -- Title, Image
 local Section = FourthTab:CreateSection("Items")
 local Dropdown = FourthTab:CreateDropdown({
     Name = "Dropdown Example",
-    Options = {"Chicken","Option 2"},
+    Options = {"Chicken","Water", "AppleJuice", "GreenAppleJuice", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves"},
     CurrentOption = {"Option 1"},
     MultipleOptions = false,
     Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
