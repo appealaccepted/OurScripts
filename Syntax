@@ -18,7 +18,7 @@ local RunService = game:GetService("RunService")
 Rayfield:Notify({
 	Title = "Tha Bronx 2",
 	Content = "Made by lake9zup and Peterrrrt with luv 🐦",
-	Duration = 6.5,
+	Duration = 3,
 	Image = 4483362458,
 })
 
@@ -244,6 +244,10 @@ local function ESPTing(mode)
 		_G.TextFont = Drawing.Fonts.UI   -- The font of the text. (UI, System, Plex, Monospace) 
 
 		local ESP2 = Drawing.new("Text")
+
+        if Variables.ESPThings.Names then
+            warn("Enabled Name ESP") -- debug
+        end
 
 		connection2 = game:GetService("RunService").RenderStepped:Connect(function()
 
@@ -578,25 +582,45 @@ local Section = ThirdTab:CreateSection("Main")
 local Button = ThirdTab:CreateButton({
 	Name = "Instant ProximityPrompt",
 	Callback = function()
-		local function changeAllProximityPromptsHoldDuration(newHoldDuration)
 
-			for _, object in pairs(game:GetDescendants()) do
+        local function ProximityPromptDuration(HoldDur)
+           for i,v in workspace:GetDescendants() do
+                if v:IsA("ProximityPrompt") then
+                    v.HoldDuration = HoldDur
+                end
+           end
+        end
 
-				if object:IsA("ProximityPrompt") then
+        ProximityPromptDuration(0)
 
-					object.HoldDuration = newHoldDuration
-				end
-			end
-		end
+       workspace.DescendantAdded:Connect(function(Added)
+            if Added:IsA("ProximityPrompt") then
+                ProximityPromptDuration(0)
+            end
+       end)
 
-		changeAllProximityPromptsHoldDuration(0)
+       Rayfield:Notify({
+        Title = "Tha Bronx 2",
+        Content = "Instant Prompts Toggled.",
+        Duration = 2,
+        Image = 4483362458,
+    })
+       
 	end,
+
 })
 
 local Button = ThirdTab:CreateButton({
 	Name = "Inf Stamina",
 	Callback = function()
 		game.Players.LocalPlayer.PlayerGui.Run.Frame.Frame.Frame["StaminaBarScript"].Disabled = true
+
+        Rayfield:Notify({
+            Title = "Tha Bronx 2",
+            Content = "Infinite Stamina Toggled.",
+            Duration = 2,
+            Image = 4483362458,
+        })
 	end,
 })
 
@@ -604,6 +628,13 @@ local Button = ThirdTab:CreateButton({
 	Name = "Inf Sleep",
 	Callback = function()
 		game.Players.LocalPlayer.PlayerGui.SleepGui.Frame.sleep.SleepBar["sleepScript"].Disabled = true
+
+        Rayfield:Notify({
+            Title = "Tha Bronx 2",
+            Content = "Infinite Sleep Toggled.",
+            Duration = 2,
+            Image = 4483362458,
+        })
 	end,
 })
 
@@ -611,6 +642,13 @@ local Button = ThirdTab:CreateButton({
 	Name = "Inf Hunger",
 	Callback = function()
 		game.Players.LocalPlayer.PlayerGui.Hunger.Frame.Frame.Frame["HungerBarScript"].Disabled = true
+
+        Rayfield:Notify({
+            Title = "Tha Bronx 2",
+            Content = "Infinite Hunger Toggled.",
+            Duration = 2,
+            Image = 4483362458,
+        })
 	end,
 })
 
@@ -662,22 +700,28 @@ local Button = ThirdTab:CreateButton({
 	end,
 })
 
+local CurrentSelectedToBuy = "nil"
+
 local FourthTab = Window:CreateTab("Buys", 4483362458) -- Title, Image
 local Section = FourthTab:CreateSection("Items")
 local Dropdown = FourthTab:CreateDropdown({
     Name = "Items",
-    Options = {"Chicken","Water", "AppleJuice", "GreenAppleJuice", "Lean", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves"},
+    Options = {"Chicken","Water", "AppleJuice", "GreenAppleJuice", "Lean", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves", "GrapeDrank"},
     CurrentOption = {"Chicken"},
     MultipleOptions = false,
-    Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Flag = "Dropdown1",
     Callback = function(Options)
-		
+        CurrentSelectedToBuy = Options
     end,
  })
  
  local Button = FourthTab:CreateButton({
 	Name = "Purchase",
 	Callback = function()
-		
+		if CurrentSelectedToBuy ~= "nil" then
+            game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer(CurrentSelectedToBuy)
+        elseif CurrentSelectedToBuy == "GrapeDrank" then
+            game.ReplicatedStorage.ExoticShopRemote:InvokeServer("GrapeDrank")
+        end
 	end,
 })
