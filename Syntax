@@ -18,8 +18,19 @@ Rayfield:Notify({
 })
 
 local Variables = {
-	ESP = false,
-	SilentAim = false,
+	
+	ESPThings = {
+		Outlines = false,
+		Names = false,
+		Tools = false,
+	};
+	
+	SilentStuff = {
+		Enabled = false,
+		TeamCheck = false,
+		FriendCheck = false,
+	};
+
 }
 
 local TheBoxColor = Color3.fromRGB(255, 0, 0)
