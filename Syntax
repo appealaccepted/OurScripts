@@ -111,7 +111,7 @@ local function ESPTing(mode)
 			local function Updater()
 				local connection
 				connection = game:GetService("RunService").RenderStepped:Connect(function()
-					if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil and Variables.ESP then
+					if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil and Variables.ESPStuff.Outline then
 						local HumPos, OnScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 						if OnScreen then
 							local head = camera:WorldToViewportPoint(plr.Character.Head.Position)
@@ -179,12 +179,18 @@ local function ESPTing(mode)
 							Visibility(true, library)
 						else 
 							Visibility(false, library)
+							pcall(function()
+								connection:Disconnect()
+							end)
 						end
 					else 
 						Visibility(false, library)
 						if game.Players:FindFirstChild(plr.Name) == nil then
 							connection:Disconnect()
 						end
+						pcall(function()
+							connection:Disconnect()
+						end)
 					end
 				end)
 			end
@@ -203,6 +209,70 @@ local function ESPTing(mode)
 			end
 		end)
 	end
+	
+	if (mode == "tool") then
+		
+	end
+	
+	if (mode == "name") then
+
+		local connection2
+
+		_G.ESPVisible = Variables.ESPStuff.Name   -- If set to true then the ESP will be visible and vice versa.
+		_G.TextColor = Color3.fromRGB(85, 26, 3)   -- The color that the boxes would appear as.
+		_G.TextSize = 10   -- The size of the text.
+		_G.Center = true   -- If set to true then the script would be located at the center of the label.
+		_G.Outline = true   -- If set to true then the text would have an outline.
+		_G.OutlineColor = Color3.fromRGB(0, 0, 0)   -- The outline color of the text.
+		_G.TextTransparency = 0.7   -- The transparency of the text.
+		_G.TextFont = Drawing.Fonts.UI   -- The font of the text. (UI, System, Plex, Monospace) 
+
+		local ESP2 = Drawing.new("Text")
+
+		connection2 = game:GetService("RunService").RenderStepped:Connect(function()
+
+			if Variables.ESPStuff.Name then
+				for _, v in next, Players:GetPlayers() do
+					if v.Name ~= Players.LocalPlayer.Name then
+
+						if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
+							local Vector, OnScreen = Camera:WorldToViewportPoint(workspace[v.Name]:WaitForChild("Head", math.huge).Position)
+
+							ESP2.Size = _G.TextSize
+							ESP2.Center = _G.Center
+							ESP2.Outline = _G.Outline
+							ESP2.OutlineColor = _G.OutlineColor
+							ESP2.Color = _G.TextColor
+							ESP2.Transparency = _G.TextTransparency
+							ESP2.Font = _G.TextFont
+
+							if OnScreen == true then
+								local Part1 = workspace:WaitForChild(v.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position
+								local Part2 = workspace:WaitForChild(Players.LocalPlayer.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position or 0
+								local Dist = (Part1 - Part2).Magnitude
+								ESP2.Position = Vector2.new(Vector.X, Vector.Y - 25)
+								ESP2.Text = ("("..tostring(math.floor(tonumber(Dist)))..") "..v.Name)
+							else
+								ESP2.Visible = false
+							end
+						else
+							ESP2.Visible = false
+						end
+					end
+
+					Players.PlayerRemoving:Connect(function()
+						ESP2.Visible = false
+					end)
+
+				end
+			else
+				connection2:Disconnect()
+			end
+
+		end)
+
+	end
+	
 end
 
 local Window = Rayfield:CreateWindow({
@@ -293,7 +363,7 @@ local Toggle = MainTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		warn(Value)
+		warn(Value, "esp")
 		Variables.ESP = Value
 		ESPTing("Start")
 	end,
@@ -304,9 +374,9 @@ local Toggle = MainTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		warn(Value)
+		warn(Value, "name")
 		Variables.ESP = Value
-		ESPTing("Start")
+		ESPTing("name")
 	end,
 })
 
@@ -315,9 +385,8 @@ local Toggle = MainTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		warn(Value)
+		warn(Value, "tools")
 		Variables.ESP = Value
-		ESPTing("Start")
 	end,
 })
 
