@@ -127,7 +127,7 @@ local function ESPTing(mode)
 			local function Updater()
 				local connection
 				connection = game:GetService("RunService").RenderStepped:Connect(function()
-					if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil and Variables.ESPStuff.Outline then
+					if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil and Variables.ESPThings.Outlines then
 						local HumPos, OnScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 						if OnScreen then
 							local head = camera:WorldToViewportPoint(plr.Character.Head.Position)
@@ -225,16 +225,16 @@ local function ESPTing(mode)
 			end
 		end)
 	end
-	
+
 	if (mode == "tool") then
-		
+
 	end
-	
+
 	if (mode == "name") then
 
 		local connection2
 
-		_G.ESPVisible = Variables.ESPStuff.Name   -- If set to true then the ESP will be visible and vice versa.
+		_G.ESPVisible = Variables.ESPThings.Names   -- If set to true then the ESP will be visible and vice versa.
 		_G.TextColor = Color3.fromRGB(85, 26, 3)   -- The color that the boxes would appear as.
 		_G.TextSize = 10   -- The size of the text.
 		_G.Center = true   -- If set to true then the script would be located at the center of the label.
@@ -247,7 +247,7 @@ local function ESPTing(mode)
 
 		connection2 = game:GetService("RunService").RenderStepped:Connect(function()
 
-			if Variables.ESPStuff.Name then
+			if Variables.ESPThings.Names then
 				for _, v in next, Players:GetPlayers() do
 					if v.Name ~= Players.LocalPlayer.Name then
 
@@ -288,7 +288,7 @@ local function ESPTing(mode)
 		end)
 
 	end
-	
+
 end
 
 local Window = Rayfield:CreateWindow({
@@ -333,9 +333,9 @@ local Toggle = MainTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		Variables.SilentAim = Value
+		Variables.SilentStuff.Enabled = Value
 		warn(Value,"nigger")
-		
+
 	end,
 })
 
@@ -344,9 +344,9 @@ local Toggle = MainTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		Variables.SilentAim = Value
+		Variables.SilentStuff.TeamCheck = Value
 		warn(Value,"nigger")
-		
+
 	end,
 })
 
@@ -355,9 +355,9 @@ local Toggle = MainTab:CreateToggle({
 	CurrentValue = false,
 	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
-		Variables.SilentAim = Value
+		Variables.SilentStuff.FriendCheck = Value
 		warn(Value,"nigger")
-		
+
 	end,
 })
 
