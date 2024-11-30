@@ -667,7 +667,7 @@ local Section = FourthTab:CreateSection("Items")
 local Dropdown = FourthTab:CreateDropdown({
     Name = "Items",
     Options = {"Chicken","Water", "AppleJuice", "GreenAppleJuice", "Lean", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves"},
-    CurrentOption = {"Option 1"},
+    CurrentOption = {"Chicken"},
     MultipleOptions = false,
     Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
     Callback = function(Options)
@@ -676,6 +676,25 @@ local Dropdown = FourthTab:CreateDropdown({
     end,
  })
  
+ local Button = FourthTab:CreateButton({
+	Name = "Purchase",
+	Callback = function()
+		
+	end,
+})
+
+local Section = FourthTab:CreateSection("Ammo")
+local Dropdown = FourthTab:CreateDropdown({
+    Name = "Ammo",
+    Options = {"Uzi Mag","Bullets", "5.56", "9mm", "Extended", "Fn Mag", "Mac Mag", "Tec Mag", "Drum"},
+    CurrentOption = {"Uzi Mag"},
+    MultipleOptions = false,
+    Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Options)
+    
+    end,
+ })
+
  local Button = FourthTab:CreateButton({
 	Name = "Purchase",
 	Callback = function()
