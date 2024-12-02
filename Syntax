@@ -328,7 +328,7 @@ local MainTab = Window:CreateTab("Combat", 4483362458) -- Title, Image
 
 local Section = MainTab:CreateSection("Aim")
 local Toggle = MainTab:CreateToggle({
-	Name = "Silent Aim",
+	Name = "Silent Aim (soon)",
 	CurrentValue = false,
 	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 	Callback = function(Value)
@@ -403,6 +403,173 @@ local Toggle = MainTab:CreateToggle({
 		Variables.ESPThings.Tools = Value
 	end,
 })
+
+local Button = MainTab:CreateButton({
+    Name = "Skeleton esp (old)",
+    Callback = function()
+        local Players = game:GetService("Players")
+		local RunService = game:GetService("RunService")
+		local Camera = workspace.CurrentCamera
+		local UserInputService = game:GetService("UserInputService")
+		
+		local skeletonEnabled = false -- ESP starts off
+		local playerLines = {} -- Stores drawing lines for all players
+		local playerTags = {} -- Stores name tags for each player
+		
+		-- Body parts to connect for skeleton
+		local bodyParts = {
+			{ "Head", "UpperTorso" },
+			{ "UpperTorso", "LowerTorso" },
+			{ "LeftUpperArm", "LeftLowerArm" },
+			{ "LeftLowerArm", "LeftHand" },
+			{ "RightUpperArm", "RightLowerArm" },
+			{ "RightLowerArm", "RightHand" },
+			{ "LeftUpperLeg", "LeftLowerLeg" },
+			{ "LeftLowerLeg", "LeftFoot" },
+			{ "RightUpperLeg", "RightLowerLeg" },
+			{ "RightLowerLeg", "RightFoot" },
+			{ "UpperTorso", "LeftUpperArm" },
+			{ "UpperTorso", "RightUpperArm" },
+			{ "LowerTorso", "LeftUpperLeg" },
+			{ "LowerTorso", "RightUpperLeg" },
+		}
+		
+		-- Function to create a line using the Drawing API
+		local function createLine()
+			local line = Drawing.new("Line")
+			line.Thickness = 1.5
+			line.Color = Color3.new(1, 1, 1) -- White
+			line.Transparency = 1
+			line.Visible = false
+			return line
+		end
+		
+		-- Function to create a name tag for each player
+		local function createNameTag()
+			local nameTag = Drawing.new("Text")
+			nameTag.Size = 14 -- Adjust the size to be readable
+			nameTag.Color = Color3.new(1, 1, 1) -- White
+			nameTag.Transparency = 1
+			nameTag.Center = true -- Centers the text above the player's head
+			nameTag.Outline = true -- Adds an outline for better visibility
+			nameTag.Visible = false
+			return nameTag
+		end
+		
+		-- Toggle ESP visibility
+		local function toggleESP()
+			skeletonEnabled = not skeletonEnabled
+			if not skeletonEnabled then
+				-- Hide all lines and tags when ESP is disabled
+				for _, lines in pairs(playerLines) do
+					for _, line in pairs(lines) do
+						line.Visible = false
+					end
+				end
+				for _, nameTag in pairs(playerTags) do
+					nameTag.Visible = false
+				end
+			end
+			print("Skeleton ESP toggled:", skeletonEnabled)
+		end
+		
+		-- Keybinding to toggle ESP
+		UserInputService.InputBegan:Connect(function(input, gameProcessed)
+			if not gameProcessed and input.KeyCode == Enum.KeyCode.H then
+				toggleESP()
+			end
+		end)
+		
+		-- Render ESP on each frame
+		RunService.RenderStepped:Connect(function()
+			if not skeletonEnabled then return end
+		
+			for _, player in ipairs(Players:GetPlayers()) do
+				if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+					local character = player.Character
+					local humanoid = character:FindFirstChild("Humanoid")
+					local head = character:FindFirstChild("Head")
+					local nameTag = playerTags[player] or createNameTag()
+		
+					-- Create the name tag if it doesn't exist
+					if not playerTags[player] then
+						playerTags[player] = nameTag
+					end
+		
+					if head and humanoid and humanoid.Health > 0 then
+						-- Update the position and text of the name tag
+						local screenPos = Camera:WorldToViewportPoint(head.Position)
+						if screenPos.Z > 0 then
+							nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - 25) -- Above the head
+							nameTag.Text = player.Name -- Set the username
+							nameTag.Visible = true
+						else
+							nameTag.Visible = false
+						end
+		
+						playerLines[player] = playerLines[player] or {}
+						local lineIndex = 1
+		
+						-- Draw skeleton lines
+						for _, connection in ipairs(bodyParts) do
+							local part1 = character:FindFirstChild(connection[1])
+							local part2 = character:FindFirstChild(connection[2])
+		
+							if part1 and part2 then
+								local line = playerLines[player][lineIndex] or createLine()
+								playerLines[player][lineIndex] = line
+		
+								local pos1, onScreen1 = Camera:WorldToViewportPoint(part1.Position)
+								local pos2, onScreen2 = Camera:WorldToViewportPoint(part2.Position)
+		
+								if onScreen1 and onScreen2 then
+									line.From = Vector2.new(pos1.X, pos1.Y)
+									line.To = Vector2.new(pos2.X, pos2.Y)
+									line.Visible = true
+								else
+									line.Visible = false
+								end
+							end
+		
+							lineIndex = lineIndex + 1
+						end
+		
+						-- Hide unused lines for this player
+						for i = lineIndex, #playerLines[player] do
+							if playerLines[player][i] then
+								playerLines[player][i].Visible = false
+							end
+						end
+					else
+						nameTag.Visible = false
+					end
+				elseif playerLines[player] then
+					-- Hide lines and tags for players without valid characters
+					for _, line in pairs(playerLines[player]) do
+						line.Visible = false
+					end
+					if playerTags[player] then
+						playerTags[player].Visible = false
+					end
+				end
+			end
+		end)
+		
+		-- Cleanup lines and tags when players leave
+		Players.PlayerRemoving:Connect(function(player)
+			if playerLines[player] then
+				for _, line in pairs(playerLines[player]) do
+					line:Remove()
+				end
+				playerLines[player] = nil
+			end
+			if playerTags[player] then
+				playerTags[player]:Remove()
+				playerTags[player] = nil
+			end
+		end)
+    end,
+ })
 
 local SecondTab = Window:CreateTab("Teleports", 4483362458) -- Title, Image
 local Section = SecondTab:CreateSection("Main")
