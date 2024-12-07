@@ -18,7 +18,7 @@ local RunService = game:GetService("RunService")
 Rayfield:Notify({
 	Title = "Tha Bronx 2",
 	Content = "Made by lake9zup and Peterrrrt with luv 🐦",
-	Duration = 3,
+	Duration = 1,
 	Image = 4483362458,
 })
 
