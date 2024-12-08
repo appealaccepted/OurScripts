@@ -601,7 +601,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(92981.3281, 122096.047, 17026.7617, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		local LocationToTP2 = CFrame.new(92976.3203, 122103.383, 16972.959, 0, 0, -1, 0, 1, 0, 1, 0, 0)
 		YourRoot.CFrame = LocationToTP2 
 	end,
 })
