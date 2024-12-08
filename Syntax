@@ -470,7 +470,6 @@ local Button = MainTab:CreateButton({
 					nameTag.Visible = false
 				end
 			end
-			print("Skeleton ESP toggled:", skeletonEnabled)
 		end
 		
 		-- Keybinding to toggle ESP
