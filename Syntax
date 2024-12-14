@@ -1033,7 +1033,7 @@ local Button = ThirdTab:CreateButton({
 local CurrentSelectedToBuy = "nil"
 
 local FourthTab = Window:CreateTab("Buys", 4483362458) -- Title, Image
-local Section = FourthTab:CreateSection("Items")
+local Section = FourthTab:CreateSection("Shop")
 local Dropdown = FourthTab:CreateDropdown({
     Name = "Items",
     Options = {"Water", "AppleJuice", "GreenAppleJuice", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves", "RawChicken", "RawSteak", "GrapeDrank",},
@@ -1050,6 +1050,30 @@ local Dropdown = FourthTab:CreateDropdown({
 	Callback = function()
 		if CurrentSelectedToBuy ~= "nil" then
             game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer(CurrentSelectedToBuy)
+        elseif CurrentSelectedToBuy == "GrapeDrank" then
+            game.ReplicatedStorage.ExoticShopRemote:InvokeServer("GrapeDrank")
+        end
+	end,
+})
+
+
+local Section = FourthTab:CreateSection("Exotic Dealer")
+local Dropdown = FourthTab:CreateDropdown({
+    Name = "Items",
+    Options = {"FakeCard", "GrapeDrank", "RiceBag", "Seeds" },
+    CurrentOption = {"FakeCard"},
+    MultipleOptions = false,
+    Flag = "Dropdown1",
+    Callback = function(Options)
+        CurrentSelectedToBuy = table.unpack(Options)
+    end,
+ })
+
+ local Button = FourthTab:CreateButton({
+	Name = "Purchase",
+	Callback = function()
+		if CurrentSelectedToBuy ~= "nil" then
+            game:GetService("ReplicatedStorage"):WaitForChild("ExoticShopRemote"):InvokeServer(CurrentSelectedToBuy)
         elseif CurrentSelectedToBuy == "GrapeDrank" then
             game.ReplicatedStorage.ExoticShopRemote:InvokeServer("GrapeDrank")
         end
