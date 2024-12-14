@@ -455,7 +455,7 @@ local player = game.Players.LocalPlayer
 local camera = game.Workspace.CurrentCamera
 local userInputService = game:GetService("UserInputService")
 local nearestHead = nil
-local lockRange = 50 -- Range for detecting players to lock on to
+local lockRange = 100 -- Range for detecting players to lock on to
 local headTag = "Head" -- Name of the head part
 local isLockedOn = false -- Flag to check if we're locked onto a target
 
