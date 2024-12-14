@@ -446,6 +446,87 @@ end
 	end,
 })
 
+local Button = MainTab:CreateButton({
+	Name = "Aimbot",
+	Callback = function()
+		-- Simple Hitbox Expander Script
+-- Variables
+local player = game.Players.LocalPlayer
+local camera = game.Workspace.CurrentCamera
+local userInputService = game:GetService("UserInputService")
+local nearestHead = nil
+local lockRange = 50 -- Range for detecting players to lock on to
+local headTag = "Head" -- Name of the head part
+local isLockedOn = false -- Flag to check if we're locked onto a target
+
+-- Function to find the nearest head
+local function getNearestHead()
+    local nearestDistance = lockRange
+    nearestHead = nil
+
+    -- Loop through all players in the game
+    for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character then
+            local character = otherPlayer.Character
+            local head = character:FindFirstChild(headTag)
+            
+            if head then
+                -- Calculate the distance from the camera to the head
+                local distance = (head.Position - camera.CFrame.Position).Magnitude
+                if distance < nearestDistance then
+                    nearestDistance = distance
+                    nearestHead = head
+                end
+            end
+        end
+    end
+end
+
+-- Function to lock the camera to the nearest head
+local function lockCameraToHead()
+    if nearestHead then
+        -- Calculate the direction to look at the head
+        local targetPosition = nearestHead.Position
+        local currentPosition = camera.CFrame.Position
+        
+        -- Make the camera rotate smoothly towards the head
+        local direction = (targetPosition - currentPosition).unit
+        local targetCFrame = CFrame.lookAt(currentPosition, targetPosition)
+        
+        -- Lerp to smoothly rotate the camera
+        camera.CFrame = camera.CFrame:Lerp(targetCFrame, 0.1)  -- Change 0.1 for smoothness
+    end
+end
+
+-- Input handling for the "E" key
+userInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+    if gameProcessedEvent then return end
+
+    if input.KeyCode == Enum.KeyCode.E then
+        -- Toggle the lock-on when "E" is pressed
+        if not isLockedOn then
+            -- Find the nearest head
+            getNearestHead()
+            if nearestHead then
+                isLockedOn = true
+            end
+        else
+            isLockedOn = false -- Unlock when "E" is pressed again
+            nearestHead = nil
+        end
+    end
+end)
+
+-- Update the camera every frame when locked on
+game:GetService("RunService").RenderStepped:Connect(function()
+    if isLockedOn then
+        lockCameraToHead()  -- Lock camera to the head
+    end
+end)
+
+	end,
+})
+
 local Section = MainTab:CreateSection("Visuals")
 local Toggle = MainTab:CreateToggle({
 	Name = "Outline",
