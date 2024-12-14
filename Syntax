@@ -371,6 +371,81 @@ local Dropdown = MainTab:CreateDropdown({
     end,
  })
 
+ local Button = MainTab:CreateButton({
+	Name = "Hitbox",
+	Callback = function()
+		-- Simple Hitbox Expander Script
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local HitboxSize = Vector3.new(10, 10, 10) -- Adjust the size as needed
+
+local toggleEnabled = false -- Toggle state
+
+-- Function to modify hitboxes
+local function expandHitbox(character)
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") and part.Name == "HumanoidRootPart" then
+            part.Size = HitboxSize
+            part.Transparency = 0.5 -- Makes the hitbox visible (optional)
+            part.CanCollide = false
+        end
+    end
+end
+
+-- Function to reset hitboxes
+local function resetHitbox(character)
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") and part.Name == "HumanoidRootPart" then
+            part.Size = Vector3.new(2, 2, 1) -- Default size
+            part.Transparency = 0
+            part.CanCollide = true
+        end
+    end
+end
+
+-- Toggle function
+local function toggleHitbox()
+    toggleEnabled = not toggleEnabled
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            if toggleEnabled then
+                expandHitbox(player.Character)
+            else
+                resetHitbox(player.Character)
+            end
+        end
+    end
+end
+
+-- Keybind for toggling
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.J then
+        toggleHitbox()
+    end
+end)
+
+-- Update hitboxes when new players join
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if toggleEnabled then
+            expandHitbox(character)
+        end
+    end)
+end)
+
+-- Update hitboxes for respawning players
+for _, player in ipairs(Players:GetPlayers()) do
+    player.CharacterAdded:Connect(function(character)
+        if toggleEnabled then
+            expandHitbox(character)
+        end
+    end)
+end
+
+	end,
+})
+
 local Section = MainTab:CreateSection("Visuals")
 local Toggle = MainTab:CreateToggle({
 	Name = "Outline",
@@ -403,6 +478,9 @@ local Toggle = MainTab:CreateToggle({
 		Variables.ESPThings.Tools = Value
 	end,
 })
+
+
+
 
 local Button = MainTab:CreateButton({
     Name = "Skeleton esp (old)",
