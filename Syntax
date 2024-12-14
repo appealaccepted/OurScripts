@@ -294,7 +294,7 @@ local Window = Rayfield:CreateWindow({
 	Name = "🔫 Tha Bronx 2 🔫",
 	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
 	LoadingTitle = SetTitle,
-	LoadingSubtitle = "Retangers",
+	LoadingSubtitle = "By lake9zup and Peterrrrt",
 	Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
 	DisableRayfieldPrompts = false,
@@ -880,7 +880,7 @@ local FourthTab = Window:CreateTab("Buys", 4483362458) -- Title, Image
 local Section = FourthTab:CreateSection("Shop")
 local Dropdown = FourthTab:CreateDropdown({
     Name = "Items",
-    Options = {"Water", "AppleJuice", "GreenAppleJuice", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves", "RawChicken", "RawSteak", "GrapeDrank",},
+    Options = {"Water", "AppleJuice", "GreenAppleJuice", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves", "RawChicken", "RawSteak"},
     CurrentOption = {"Water"},
     MultipleOptions = false,
     Flag = "Dropdown1",
