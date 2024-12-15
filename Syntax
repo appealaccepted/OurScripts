@@ -761,6 +761,17 @@ local Button = SecondTab:CreateButton({
 	end,
 })
 
+local Button = SecondTab:CreateButton({
+	Name = "Penthouse",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-22, 417, -599)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
 
 local ThirdTab = Window:CreateTab("Misc", 4483362458) -- Title, Image
 local Section = ThirdTab:CreateSection("Main")
