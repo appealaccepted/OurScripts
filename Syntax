@@ -581,7 +581,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(36892.7188, 14073.7383, 5841.62939, -0.499959469, 0, 0.866048813, 0, 1, 0, -0.866048813, 0, -0.499959469)
+		local LocationToTP2 = CFrame.new(51373, 21680, 5842)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -603,7 +603,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(92976.3203, 122103.383, 16972.959, 0, 0, -1, 0, 1, 0, 1, 0, 0)
+		local LocationToTP2 = CFrame.new(92971, 122098, 17024)
 		YourRoot.CFrame = LocationToTP2 
 	end,
 })
@@ -614,7 +614,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(66190.1094, 123614.633, 5760.98242, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+		local LocationToTP2 = CFrame.new(66203, 123616, 5750)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -625,7 +625,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(60807.4648, 87610.8516, -333.445557, -0.13324976, -0.0112454034, -0.991018713, -0.0835598409, 0.996502757, -7.23972917e-05, 0.987553656, 0.0827997103, -0.133723378)
+		local LocationToTP2 = CFrame.new(60841, 87609, -354)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -636,7 +636,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-990.995728, 254.278625, -688.398132, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+		local LocationToTP2 = CFrame.new(-977, 254, -676)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -647,7 +647,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-180.265167, 288.021149, -1200.48596, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		local LocationToTP2 = CFrame.new(-131, 284, -1202)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -664,12 +664,12 @@ local Button = SecondTab:CreateButton({
 })
 
 local Button = SecondTab:CreateButton({
-	Name = "StarBucks",
+	Name = "Hospital",
 	Callback = function()
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-1616.68677, 253.216782, -1129.86658, 0, 0, -1, 0, 1, 0, 1, 0, 0)
+		local LocationToTP2 = CFrame.new(-1585, 253, -1223)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -680,7 +680,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-428.195618, 252.47821, -1255.93994, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		local LocationToTP2 = CFrame.new(-355, 253, -1247)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -723,7 +723,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-477.053711, 327.529999, -571.703552, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+		local LocationToTP2 = CFrame.new(-350, 340, -555)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -734,7 +734,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-479.087097, 255.491943, -391.232391, 0, 0, 1, 0, 1, -0, -1, 0, 0)
+		local LocationToTP2 = CFrame.new(-31, 283, -546)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
@@ -745,7 +745,7 @@ local Button = SecondTab:CreateButton({
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-425.721069, 256.870087, -936.846558, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+		local LocationToTP2 = CFrame.new(-351, 254, -936)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
