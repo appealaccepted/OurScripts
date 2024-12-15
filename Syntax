@@ -708,7 +708,7 @@ local Button = SecondTab:CreateButton({
 })
 
 local Button = SecondTab:CreateButton({
-	Name = "Kfc",
+	Name = "Chicken Shop",
 	Callback = function()
 		local yr = game.Players.LocalPlayer.Character.HumanoidRootPart
 		local tp2 = CFrame.new(-956.771484, 251.26651, -805.67218, 1, 0, 0, 0, 1, 0, 0, 0, 1)
@@ -729,7 +729,7 @@ local Button = SecondTab:CreateButton({
 })
 
 local Button = SecondTab:CreateButton({
-	Name = "Random Storage",
+	Name = "Storage",
 	Callback = function()
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
@@ -740,12 +740,23 @@ local Button = SecondTab:CreateButton({
 })
 
 local Button = SecondTab:CreateButton({
-	Name = "Basketball Court",
+	Name = "Backpack Shop",
 	Callback = function()
 		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-351, 254, -936)
+		local LocationToTP2 = CFrame.new(-674, 254, -685)
+		YourRoot.CFrame = LocationToTP2
+	end,
+})
+
+local Button = SecondTab:CreateButton({
+	Name = "Watch Shop",
+	Callback = function()
+		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		--warn(YourRoot.CFrame)
+		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+		local LocationToTP2 = CFrame.new(-122, 284, -1171)
 		YourRoot.CFrame = LocationToTP2
 	end,
 })
