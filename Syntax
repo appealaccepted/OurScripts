@@ -508,7 +508,7 @@ local function scaleHeadHitbox(player, scale)
     if player.Character and player.Character:FindFirstChild("Head") then
         local head = player.Character.Head
         if not originalSizes[player] then
-            originalSizes[player] = head.Size -- Save the original size if not already saved
+            originalSizes[player] = head.Size -- Save original size if not already saved
         end
         head.Size = originalSizes[player] * scale -- Scale the head
         head.CanCollide = false -- Disable collision for fairness
@@ -538,11 +538,27 @@ local function toggleHitbox(state)
     end
 end
 
--- Apply the hitbox scaling to players
+-- Apply the hitbox scaling to a player's character
+local function applyHitboxScaling(player)
+    player.CharacterAdded:Connect(function(character)
+        -- Wait for the character's head to load properly before scaling
+        local head = character:WaitForChild("Head", 10) -- 10 second timeout in case of issues
+        if head and hitboxEnabled then
+            scaleHeadHitbox(player, 2) -- Make the head hitbox twice as big
+        end
+    end)
+
+    -- Scale hitbox for already loaded characters
+    if player.Character then
+        scaleHeadHitbox(player, 2)
+    end
+end
+
+-- Apply hitbox scaling to all players, including new and respawned ones
 local function applyHitboxScalingToAll()
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            scaleHeadHitbox(player, 2) -- Make the head hitbox twice as big
+            applyHitboxScaling(player)
         end
     end
 end
@@ -556,11 +572,9 @@ end)
 
 -- Ensure that the head hitbox is scaled for new players who join
 Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        if hitboxEnabled then
-            scaleHeadHitbox(player, 2) -- Scale head hitbox for newly added players
-        end
-    end)
+    if hitboxEnabled then
+        applyHitboxScaling(player)
+    end
 end)
 
 -- Reset hitbox when players leave
@@ -574,6 +588,9 @@ HitboxSection:AddToggle({
     Flag = 'FarmingSection_ToggleHeadHitbox',
     Callback = function(state)
         toggleHitbox(state)
+        if hitboxEnabled then
+            applyHitboxScalingToAll() -- Apply to all existing players when toggled on
+        end
     end
 })
 
