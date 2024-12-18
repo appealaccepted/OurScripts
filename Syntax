@@ -1,947 +1,609 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-local RandomTitle = math.random(1,3)
-local SetTitle = ""
+local library = loadstring(game:GetObjects("rbxassetid://7657867786")[1].Source)()
+local Wait = library.subs.Wait -- Only returns if the GUI has not been terminated. For 'while Wait() do' loops
 
-if RandomTitle == 1 then
-	SetTitle = "Micro Penis"
-elseif RandomTitle == 2 then
-	SetTitle = "Sandy Penis"
-elseif RandomTitle == 3 then
-	SetTitle = "Lil ButPlug"
-end
-
-local Players = game:GetService("Players")
-local LocalPlr = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
-local RunService = game:GetService("RunService")
-
-Rayfield:Notify({
-	Title = "Tha Bronx 2",
-	Content = "",
-	Duration = 1,
-	Image = 4483362458,
-})
-
-local Variables = {
-	
-	ESPThings = {
-		Outlines = false,
-		Names = false,
-		Tools = false,
-        WallCheck = false,
-	};
-	
-	SilentStuff = {
-		Enabled = false,
-		TeamCheck = false,
-		FriendCheck = false,
-        PickedHitParts = {},
-	};
-
+local PepsisWorld = library:CreateWindow({
+Name = "Tha Bronx 2",
+Themeable = {
+Info = "Discord Server: VzYTJ7Y"
 }
-
-local TheBoxColor = Color3.fromRGB(255, 0, 0)
-local TheBoxThickness = 1
-
-local Settings = {
-	Box_Color = TheBoxColor,
-	Tracer_Color = Color3.fromRGB(255, 0, 0),
-	Tracer_Thickness = 1,
-	Box_Thickness = TheBoxThickness,
-	Tracer_Origin = "Bottom", -- Middle or Bottom if FollowMouse is on this won't matter...
-	Tracer_FollowMouse = false,
-	Tracers = false
-}
-local Team_Check = {
-	TeamCheck = false, -- if TeamColor is on this won't matter...
-	Green = Color3.fromRGB(0, 255, 0),
-	Red = Color3.fromRGB(255, 0, 0)
-}
-local TeamColor = false
-
-local function ESPTing(mode)
-	if (mode == "Start") then
-
-		local player = game:GetService("Players").LocalPlayer
-		local camera = game:GetService("Workspace").CurrentCamera
-		local mouse = player:GetMouse()
-
-		local function NewQuad(thickness, color)
-			local quad = Drawing.new("Quad")
-			quad.Visible = false
-			quad.PointA = Vector2.new(0,0)
-			quad.PointB = Vector2.new(0,0)
-			quad.PointC = Vector2.new(0,0)
-			quad.PointD = Vector2.new(0,0)
-			quad.Color = color
-			quad.Filled = false
-			quad.Thickness = thickness
-			quad.Transparency = 1
-			return quad
-		end
-
-		local function NewLine(thickness, color)
-			local line = Drawing.new("Line")
-			line.Visible = false
-			line.From = Vector2.new(0, 0)
-			line.To = Vector2.new(0, 0)
-			line.Color = color 
-			line.Thickness = thickness
-			line.Transparency = 1
-			return line
-		end
-
-		local function Visibility(state, lib)
-			for u, x in pairs(lib) do
-				x.Visible = state
-			end
-		end
-
-		local function ToColor3(col) --Function to convert, just cuz c;
-			local r = col.r --Red value
-			local g = col.g --Green value
-			local b = col.b --Blue value
-			return Color3.new(r,g,b); --Color3 datatype, made of the RGB inputs
-		end
-
-		local black = Color3.fromRGB(0, 0 ,0)
-		local function ESP(plr)
-			local library = {
-				--//Tracer and Black Tracer(black border)
-				blacktracer = NewLine(Settings.Tracer_Thickness*2, black),
-				tracer = NewLine(Settings.Tracer_Thickness, Settings.Tracer_Color),
-				--//Box and Black Box(black border)
-				black = NewQuad(Settings.Box_Thickness*2, black),
-				box = NewQuad(Settings.Box_Thickness, Settings.Box_Color),
-				--//Bar and Green Health Bar (part that moves up/down)
-				healthbar = NewLine(3, black),
-				greenhealth = NewLine(1.5, black)
-			}
-
-			local function Colorize(color)
-				for u, x in pairs(library) do
-					if x ~= library.healthbar and x ~= library.greenhealth and x ~= library.blacktracer and x ~= library.black then
-						x.Color = color
-					end
-				end
-			end
-
-			local function Updater()
-				local connection
-				connection = game:GetService("RunService").RenderStepped:Connect(function()
-					if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") ~= nil and Variables.ESPThings.Outlines then
-						local HumPos, OnScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
-						if OnScreen then
-							local head = camera:WorldToViewportPoint(plr.Character.Head.Position)
-							local DistanceY = math.clamp((Vector2.new(head.X, head.Y) - Vector2.new(HumPos.X, HumPos.Y)).magnitude, 2, math.huge)
-
-							local function Size(item)
-								item.PointA = Vector2.new(HumPos.X + DistanceY, HumPos.Y - DistanceY*2)
-								item.PointB = Vector2.new(HumPos.X - DistanceY, HumPos.Y - DistanceY*2)
-								item.PointC = Vector2.new(HumPos.X - DistanceY, HumPos.Y + DistanceY*2)
-								item.PointD = Vector2.new(HumPos.X + DistanceY, HumPos.Y + DistanceY*2)
-							end
-							Size(library.box)
-							Size(library.black)
-
-							--//Tracer 
-							if Settings.Tracers then
-								if Settings.Tracer_Origin == "Middle" then
-									library.tracer.From = camera.ViewportSize*0.5
-									library.blacktracer.From = camera.ViewportSize*0.5
-								elseif Settings.Tracer_Origin == "Bottom" then
-									library.tracer.From = Vector2.new(camera.ViewportSize.X*0.5, camera.ViewportSize.Y) 
-									library.blacktracer.From = Vector2.new(camera.ViewportSize.X*0.5, camera.ViewportSize.Y)
-								end
-								if Settings.Tracer_FollowMouse then
-									library.tracer.From = Vector2.new(mouse.X, mouse.Y+36)
-									library.blacktracer.From = Vector2.new(mouse.X, mouse.Y+36)
-								end
-								library.tracer.To = Vector2.new(HumPos.X, HumPos.Y + DistanceY*2)
-								library.blacktracer.To = Vector2.new(HumPos.X, HumPos.Y + DistanceY*2)
-							else 
-								library.tracer.From = Vector2.new(0, 0)
-								library.blacktracer.From = Vector2.new(0, 0)
-								library.tracer.To = Vector2.new(0, 0)
-								library.blacktracer.To = Vector2.new(0, 02)
-							end
-
-							--// Health Bar
-							local d = (Vector2.new(HumPos.X - DistanceY, HumPos.Y - DistanceY*2) - Vector2.new(HumPos.X - DistanceY, HumPos.Y + DistanceY*2)).magnitude 
-							local healthoffset = plr.Character.Humanoid.Health/plr.Character.Humanoid.MaxHealth * d
-
-							library.greenhealth.From = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2)
-							library.greenhealth.To = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2 - healthoffset)
-
-							library.healthbar.From = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y + DistanceY*2)
-							library.healthbar.To = Vector2.new(HumPos.X - DistanceY - 4, HumPos.Y - DistanceY*2)
-
-							local green = Color3.fromRGB(0, 255, 0)
-							local red = Color3.fromRGB(255, 0, 0)
-
-							library.greenhealth.Color = red:lerp(green, plr.Character.Humanoid.Health/plr.Character.Humanoid.MaxHealth);
-
-							if Team_Check.TeamCheck then
-								if plr.TeamColor == player.TeamColor then
-									Colorize(Team_Check.Green)
-								else 
-									Colorize(Team_Check.Red)
-								end
-							else 
-								library.tracer.Color = Settings.Tracer_Color
-								library.box.Color = Settings.Box_Color
-							end
-							if TeamColor == true then
-								Colorize(plr.TeamColor.Color)
-							end
-							Visibility(true, library)
-						else 
-							Visibility(false, library)
-						end
-					else 
-						Visibility(false, library)
-						if game.Players:FindFirstChild(plr.Name) == nil then
-							connection:Disconnect()
-						end
-                        connection:Disconnect()
-					end
-				end)
-			end
-			coroutine.wrap(Updater)()
-		end
-
-		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-			if v.Name ~= player.Name then
-				coroutine.wrap(ESP)(v)
-			end
-		end
-
-		game.Players.PlayerAdded:Connect(function(newplr)
-			if newplr.Name ~= player.Name then
-				coroutine.wrap(ESP)(newplr)
-			end
-		end)
-	end
-
-	if (mode == "tool") then
-
-	end
-
-	if (mode == "name") then
-
-		local connection2
-
-		_G.ESPVisible = Variables.ESPThings.Names   -- If set to true then the ESP will be visible and vice versa.
-		_G.TextColor = Color3.fromRGB(85, 26, 3)   -- The color that the boxes would appear as.
-		_G.TextSize = 10   -- The size of the text.
-		_G.Center = true   -- If set to true then the script would be located at the center of the label.
-		_G.Outline = true   -- If set to true then the text would have an outline.
-		_G.OutlineColor = Color3.fromRGB(0, 0, 0)   -- The outline color of the text.
-		_G.TextTransparency = 0.7   -- The transparency of the text.
-		_G.TextFont = Drawing.Fonts.UI   -- The font of the text. (UI, System, Plex, Monospace) 
-
-		local ESP2 = Drawing.new("Text")
-
-        if Variables.ESPThings.Names then
-            warn("Enabled Name ESP") -- debug
-            connection2 = game:GetService("RunService").RenderStepped:Connect(function()
-                for _, v in next, Players:GetPlayers() do
-                    if v.Name ~= Players.LocalPlayer.Name then
-
-                        if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
-                            local Vector, OnScreen = Camera:WorldToViewportPoint(workspace[v.Name]:WaitForChild("Head", math.huge).Position)
-
-                            ESP2.Size = _G.TextSize
-                            ESP2.Center = _G.Center
-                            ESP2.Outline = _G.Outline
-                            ESP2.OutlineColor = _G.OutlineColor
-                            ESP2.Color = _G.TextColor
-                            ESP2.Transparency = _G.TextTransparency
-                            ESP2.Font = _G.TextFont
-
-                            if OnScreen == true then
-                                local Part1 = workspace:WaitForChild(v.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position
-                                local Part2 = workspace:WaitForChild(Players.LocalPlayer.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position or 0
-                                local Dist = (Part1 - Part2).Magnitude
-                                ESP2.Position = Vector2.new(Vector.X, Vector.Y - 25)
-                                ESP2.Text = ("("..tostring(math.floor(tonumber(Dist)))..") "..v.Name)
-                            else
-                                ESP2.Visible = false
-                            end
-                        else
-                            ESP2.Visible = false
-                        end
-                    end
-
-                    Players.PlayerRemoving:Connect(function()
-                        ESP2.Visible = false
-                    end)
-
-                end
-            end)
-        else
-            warn("Toggled off Name ESP")
-            pcall(function()
-                connection2:Disconnect()
-            end)
-        end
-
-	end
-
-end
-
-local Window = Rayfield:CreateWindow({
-	Name = "🔫 Tha Bronx 2 🔫",
-	Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-	LoadingTitle = SetTitle,
-	LoadingSubtitle = "By lake9zup and Peterrrrt",
-	Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
-
-	DisableRayfieldPrompts = false,
-	DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
-	ConfigurationSaving = {
-		Enabled = true,
-		FolderName = nil, -- Create a custom folder for your hub/game
-		FileName = "Big Hub"
-	},
-
-	Discord = {
-		Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-		Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
-		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-	},
-
-	KeySystem = false, -- Set this to true to use our key system
-	KeySettings = {
-		Title = "Tha Bronx 2 KeySystem",
-		Subtitle = "Key System",
-		Note = "Join the discord for they key : invitehere", -- Use this to tell the user how to get a key
-		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-		Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-	}
 })
 
-local MainTab = Window:CreateTab("Combat", 4483362458) -- Title, Image
-
-local Section = MainTab:CreateSection("Aim")
-local Toggle = MainTab:CreateToggle({
-	Name = "Silent Aim (soon)",
-	CurrentValue = false,
-	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		Variables.SilentStuff.Enabled = Value
-		warn(Value,"nigger")
-
-	end,
+local GeneralTab = PepsisWorld:CreateTab({
+Name = "Main"
 })
 
-local Toggle = MainTab:CreateToggle({
-	Name = "Team Check",
-	CurrentValue = false,
-	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		Variables.SilentStuff.TeamCheck = Value
-		warn(Value,"nigger")
-
-	end,
-})
-
-local Toggle = MainTab:CreateToggle({
-	Name = "Friend Check",
-	CurrentValue = false,
-	Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		Variables.SilentStuff.FriendCheck = Value
-		warn(Value,"nigger")
-
-	end,
-})
-
-local Dropdown = MainTab:CreateDropdown({
-    Name = "HitParts",
-    Options = {"Head","HumanoidRootPart"},
-    CurrentOption = {"Head"},
-    MultipleOptions = false,
-    Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Options)
-        
-    end,
+local VisualsSection = GeneralTab:CreateSection({
+    Name = "Visuals"
  })
 
-local Section = MainTab:CreateSection("Visuals")
-local Toggle = MainTab:CreateToggle({
-	Name = "Outline",
-	CurrentValue = false,
-	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		warn(Value, "esp")
-		Variables.ESPThings.Outlines = Value
-		ESPTing("Start")
-	end,
-})
-
-local Toggle = MainTab:CreateToggle({
-	Name = "Username",
-	CurrentValue = false,
-	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		warn(Value, "name")
-		Variables.ESPThings.Names = Value
-		ESPTing("name")
-	end,
-})
-
-local Toggle = MainTab:CreateToggle({
-	Name = "Tools",
-	CurrentValue = false,
-	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		warn(Value, "tools")
-		Variables.ESPThings.Tools = Value
-	end,
-})
-
-
-
-
-local Button = MainTab:CreateButton({
-    Name = "Skeleton esp (old)",
+VisualsSection:AddButton({
+    Name = "Skelly",
     Callback = function()
-        local Players = game:GetService("Players")
-		local RunService = game:GetService("RunService")
-		local Camera = workspace.CurrentCamera
-		local UserInputService = game:GetService("UserInputService")
-		
-		local skeletonEnabled = false -- ESP starts off
-		local playerLines = {} -- Stores drawing lines for all players
-		local playerTags = {} -- Stores name tags for each player
-		
-		-- Body parts to connect for skeleton
-		local bodyParts = {
-			{ "Head", "UpperTorso" },
-			{ "UpperTorso", "LowerTorso" },
-			{ "LeftUpperArm", "LeftLowerArm" },
-			{ "LeftLowerArm", "LeftHand" },
-			{ "RightUpperArm", "RightLowerArm" },
-			{ "RightLowerArm", "RightHand" },
-			{ "LeftUpperLeg", "LeftLowerLeg" },
-			{ "LeftLowerLeg", "LeftFoot" },
-			{ "RightUpperLeg", "RightLowerLeg" },
-			{ "RightLowerLeg", "RightFoot" },
-			{ "UpperTorso", "LeftUpperArm" },
-			{ "UpperTorso", "RightUpperArm" },
-			{ "LowerTorso", "LeftUpperLeg" },
-			{ "LowerTorso", "RightUpperLeg" },
-		}
-		
-		-- Function to create a line using the Drawing API
-		local function createLine()
-			local line = Drawing.new("Line")
-			line.Thickness = 1.5
-			line.Color = Color3.new(1, 1, 1) -- White
-			line.Transparency = 1
-			line.Visible = false
-			return line
-		end
-		
-		-- Function to create a name tag for each player
-		local function createNameTag()
-			local nameTag = Drawing.new("Text")
-			nameTag.Size = 14 -- Adjust the size to be readable
-			nameTag.Color = Color3.new(1, 1, 1) -- White
-			nameTag.Transparency = 1
-			nameTag.Center = true -- Centers the text above the player's head
-			nameTag.Outline = true -- Adds an outline for better visibility
-			nameTag.Visible = false
-			return nameTag
-		end
-		
-		-- Toggle ESP visibility
-		local function toggleESP()
-			skeletonEnabled = not skeletonEnabled
-			if not skeletonEnabled then
-				-- Hide all lines and tags when ESP is disabled
-				for _, lines in pairs(playerLines) do
-					for _, line in pairs(lines) do
-						line.Visible = false
-					end
-				end
-				for _, nameTag in pairs(playerTags) do
-					nameTag.Visible = false
-				end
-			end
-		end
-		
-		-- Keybinding to toggle ESP
-		UserInputService.InputBegan:Connect(function(input, gameProcessed)
-			if not gameProcessed and input.KeyCode == Enum.KeyCode.H then
-				toggleESP()
-			end
-		end)
-		
-		-- Render ESP on each frame
-		RunService.RenderStepped:Connect(function()
-			if not skeletonEnabled then return end
-		
-			for _, player in ipairs(Players:GetPlayers()) do
-				if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-					local character = player.Character
-					local humanoid = character:FindFirstChild("Humanoid")
-					local head = character:FindFirstChild("Head")
-					local nameTag = playerTags[player] or createNameTag()
-		
-					-- Create the name tag if it doesn't exist
-					if not playerTags[player] then
-						playerTags[player] = nameTag
-					end
-		
-					if head and humanoid and humanoid.Health > 0 then
-						-- Update the position and text of the name tag
-						local screenPos = Camera:WorldToViewportPoint(head.Position)
-						if screenPos.Z > 0 then
-							nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - 25) -- Above the head
-							nameTag.Text = player.Name -- Set the username
-							nameTag.Visible = true
-						else
-							nameTag.Visible = false
-						end
-		
-						playerLines[player] = playerLines[player] or {}
-						local lineIndex = 1
-		
-						-- Draw skeleton lines
-						for _, connection in ipairs(bodyParts) do
-							local part1 = character:FindFirstChild(connection[1])
-							local part2 = character:FindFirstChild(connection[2])
-		
-							if part1 and part2 then
-								local line = playerLines[player][lineIndex] or createLine()
-								playerLines[player][lineIndex] = line
-		
-								local pos1, onScreen1 = Camera:WorldToViewportPoint(part1.Position)
-								local pos2, onScreen2 = Camera:WorldToViewportPoint(part2.Position)
-		
-								if onScreen1 and onScreen2 then
-									line.From = Vector2.new(pos1.X, pos1.Y)
-									line.To = Vector2.new(pos2.X, pos2.Y)
-									line.Visible = true
-								else
-									line.Visible = false
-								end
-							end
-		
-							lineIndex = lineIndex + 1
-						end
-		
-						-- Hide unused lines for this player
-						for i = lineIndex, #playerLines[player] do
-							if playerLines[player][i] then
-								playerLines[player][i].Visible = false
-							end
-						end
-					else
-						nameTag.Visible = false
-					end
-				elseif playerLines[player] then
-					-- Hide lines and tags for players without valid characters
-					for _, line in pairs(playerLines[player]) do
-						line.Visible = false
-					end
-					if playerTags[player] then
-						playerTags[player].Visible = false
-					end
-				end
-			end
-		end)
-		
-		-- Cleanup lines and tags when players leave
-		Players.PlayerRemoving:Connect(function(player)
-			if playerLines[player] then
-				for _, line in pairs(playerLines[player]) do
-					line:Remove()
-				end
-				playerLines[player] = nil
-			end
-			if playerTags[player] then
-				playerTags[player]:Remove()
-				playerTags[player] = nil
-			end
-		end)
-    end,
+       local Players = game:GetService("Players")
+         local RunService = game:GetService("RunService")
+         local Camera = workspace.CurrentCamera
+         local UserInputService = game:GetService("UserInputService")
+         
+         local skeletonEnabled = false -- ESP starts off
+         local playerLines = {} -- Stores drawing lines for all players
+         local playerTags = {} -- Stores name tags for each player
+         
+         -- Body parts to connect for skeleton
+         local bodyParts = {
+             { "Head", "UpperTorso" },
+             { "UpperTorso", "LowerTorso" },
+             { "LeftUpperArm", "LeftLowerArm" },
+             { "LeftLowerArm", "LeftHand" },
+             { "RightUpperArm", "RightLowerArm" },
+             { "RightLowerArm", "RightHand" },
+             { "LeftUpperLeg", "LeftLowerLeg" },
+             { "LeftLowerLeg", "LeftFoot" },
+             { "RightUpperLeg", "RightLowerLeg" },
+             { "RightLowerLeg", "RightFoot" },
+             { "UpperTorso", "LeftUpperArm" },
+             { "UpperTorso", "RightUpperArm" },
+             { "LowerTorso", "LeftUpperLeg" },
+             { "LowerTorso", "RightUpperLeg" },
+         }
+         
+         -- Function to create a line using the Drawing API
+         local function createLine()
+             local line = Drawing.new("Line")
+             line.Thickness = 1.5
+             line.Color = Color3.new(1, 1, 1) -- White
+             line.Transparency = 1
+             line.Visible = false
+             return line
+         end
+         
+         -- Function to create a name tag for each player
+         local function createNameTag()
+             local nameTag = Drawing.new("Text")
+             nameTag.Size = 14 -- Adjust the size to be readable
+             nameTag.Color = Color3.new(1, 1, 1) -- White
+             nameTag.Transparency = 1
+             nameTag.Center = true -- Centers the text above the player's head
+             nameTag.Outline = true -- Adds an outline for better visibility
+             nameTag.Visible = false
+             return nameTag
+         end
+         
+         -- Toggle ESP visibility
+         local function toggleESP()
+             skeletonEnabled = not skeletonEnabled
+             if not skeletonEnabled then
+                 -- Hide all lines and tags when ESP is disabled
+                 for _, lines in pairs(playerLines) do
+                     for _, line in pairs(lines) do
+                         line.Visible = false
+                     end
+                 end
+                 for _, nameTag in pairs(playerTags) do
+                     nameTag.Visible = false
+                 end
+             end
+         end
+         
+         -- Keybinding to toggle ESP
+         UserInputService.InputBegan:Connect(function(input, gameProcessed)
+             if not gameProcessed and input.KeyCode == Enum.KeyCode.H then
+                 toggleESP()
+             end
+         end)
+         
+         -- Render ESP on each frame
+         RunService.RenderStepped:Connect(function()
+             if not skeletonEnabled then return end
+         
+             for _, player in ipairs(Players:GetPlayers()) do
+                 if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+                     local character = player.Character
+                     local humanoid = character:FindFirstChild("Humanoid")
+                     local head = character:FindFirstChild("Head")
+                     local nameTag = playerTags[player] or createNameTag()
+         
+                     -- Create the name tag if it doesn't exist
+                     if not playerTags[player] then
+                         playerTags[player] = nameTag
+                     end
+         
+                     if head and humanoid and humanoid.Health > 0 then
+                         -- Update the position and text of the name tag
+                         local screenPos = Camera:WorldToViewportPoint(head.Position)
+                         if screenPos.Z > 0 then
+                             nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - 25) -- Above the head
+                             nameTag.Text = player.Name -- Set the username
+                             nameTag.Visible = true
+                         else
+                             nameTag.Visible = false
+                         end
+         
+                         playerLines[player] = playerLines[player] or {}
+                         local lineIndex = 1
+         
+                         -- Draw skeleton lines
+                         for _, connection in ipairs(bodyParts) do
+                             local part1 = character:FindFirstChild(connection[1])
+                             local part2 = character:FindFirstChild(connection[2])
+         
+                             if part1 and part2 then
+                                 local line = playerLines[player][lineIndex] or createLine()
+                                 playerLines[player][lineIndex] = line
+         
+                                 local pos1, onScreen1 = Camera:WorldToViewportPoint(part1.Position)
+                                 local pos2, onScreen2 = Camera:WorldToViewportPoint(part2.Position)
+         
+                                 if onScreen1 and onScreen2 then
+                                     line.From = Vector2.new(pos1.X, pos1.Y)
+                                     line.To = Vector2.new(pos2.X, pos2.Y)
+                                     line.Visible = true
+                                 else
+                                     line.Visible = false
+                                 end
+                             end
+         
+                             lineIndex = lineIndex + 1
+                         end
+         
+                         -- Hide unused lines for this player
+                         for i = lineIndex, #playerLines[player] do
+                             if playerLines[player][i] then
+                                 playerLines[player][i].Visible = false
+                             end
+                         end
+                     else
+                         nameTag.Visible = false
+                     end
+                 elseif playerLines[player] then
+                     -- Hide lines and tags for players without valid characters
+                     for _, line in pairs(playerLines[player]) do
+                         line.Visible = false
+                     end
+                     if playerTags[player] then
+                         playerTags[player].Visible = false
+                     end
+                 end
+             end
+         end)
+         
+         -- Cleanup lines and tags when players leave
+         Players.PlayerRemoving:Connect(function(player)
+             if playerLines[player] then
+                 for _, line in pairs(playerLines[player]) do
+                     line:Remove()
+                 end
+                 playerLines[player] = nil
+             end
+             if playerTags[player] then
+                 playerTags[player]:Remove()
+                 playerTags[player] = nil
+             end
+         end)
+     end,
  })
 
-local SecondTab = Window:CreateTab("Teleports", 4483362458) -- Title, Image
-local Section = SecondTab:CreateSection("Main")
-local Button = SecondTab:CreateButton({
-	Name = "Rice Buy",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(51373, 21680, 5842)
-		YourRoot.CFrame = LocationToTP2
-	end,
+ local PlayerSection = GeneralTab:CreateSection({
+    Name = "Player"
+ })
+
+
+ PlayerSection:AddButton({
+    Name = "Inf Sleep",
+    Callback = function()
+        game.Players.LocalPlayer.PlayerGui.SleepGui.Frame.sleep.SleepBar["sleepScript"].Disabled = true
+    end
+    })
+
+ PlayerSection:AddButton({
+     Name = "Inf Stamina",
+        Callback = function()
+            game.Players.LocalPlayer.PlayerGui.Run.Frame.Frame.Frame["StaminaBarScript"].Disabled = true
+    end
+ })
+
+
+  PlayerSection:AddButton({
+         Name = "Inf Hunger",
+            Callback = function()
+                game.Players.LocalPlayer.PlayerGui.Hunger.Frame.Frame.Frame["HungerBarScript"].Disabled = true
+    end
+    })
+
+
+ PlayerSection:AddButton({
+    Name = "Instant ProxmityPrompts",
+    Callback = function()
+        local function ProximityPromptDuration(HoldDur)
+            for i,v in workspace:GetDescendants() do
+                 if v:IsA("ProximityPrompt") then
+                     v.HoldDuration = HoldDur
+                 end
+            end
+         end
+ 
+         ProximityPromptDuration(0)
+ 
+        workspace.DescendantAdded:Connect(function(Added)
+             if Added:IsA("ProximityPrompt") then
+                 ProximityPromptDuration(0)
+             end
+        end)
+    end
+    })
+
+
+    local GuisSection = GeneralTab:CreateSection({
+        Name = "Gui"
+     })
+
+     GuisSection:AddButton({
+        Name = "Market Gui",
+        Callback = function()
+            game.Players.LocalPlayer.PlayerGui["Bronx Market 2"].Enabled = true 
+        end
+        })
+
+        GuisSection:AddButton({
+            Name = "Exotic Gui",
+            Callback = function()
+                game.Players.LocalPlayer.PlayerGui["Exotic Shop"].Enabled = true
+            end
+            })
+
+            GuisSection:AddButton({
+                Name = "Shop Gui",
+                Callback = function()
+                    game.Players.LocalPlayer.PlayerGui["ShopGUI"].Enabled = true
+                end
+                })
+-------------------------------------------------------------------------------------------
+local SecondTab = PepsisWorld:CreateTab({
+Name = "Teleports"
 })
 
-local Button = SecondTab:CreateButton({
-	Name = "Rice Sell",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(81062.2422, 133135.266, 169.988525, 0.766061246, -0, -0.642767608, 0, 1, -0, 0.642767608, 0, 0.766061246)
-		YourRoot.CFrame = LocationToTP2
-	end,
+local tpSection = SecondTab:CreateSection({
+    Name = "Teleporting"
 })
 
-local Button = SecondTab:CreateButton({
-	Name = "Gun Shop 1",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(92971, 122098, 17024)
-		YourRoot.CFrame = LocationToTP2 
-	end,
+tpSection:AddButton({
+Name = "Rice Buy",
+Callback = function()
+local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+--warn(YourRoot.CFrame)
+--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+local LocationToTP2 = CFrame.new(51373, 21680, 5842)
+YourRoot.CFrame = LocationToTP2
+end
 })
 
-local Button = SecondTab:CreateButton({
-	Name = "Gun Shop 2",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(66203, 123616, 5750)
-		YourRoot.CFrame = LocationToTP2
-	end,
+
+  tpSection:AddButton({
+ Name = "Rice Sell",
+ Callback = function()
+local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+--warn(YourRoot.CFrame)
+--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+ local LocationToTP2 = CFrame.new(81062.2422, 133135.266, 169.988525, 0.766061246, -0, -0.642767608, 0, 1, -0, 0.642767608, 0, 0.766061246)
+YourRoot.CFrame = LocationToTP2
+end
 })
 
-local Button = SecondTab:CreateButton({
-	Name = "Exotic Guns",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(60841, 87609, -354)
-		YourRoot.CFrame = LocationToTP2
-	end,
+tpSection:AddButton({
+Name = "Gun Shop 1",
+Callback = function()
+local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+--warn(YourRoot.CFrame)
+--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+local LocationToTP2 = CFrame.new(92971, 122098, 17024)
+YourRoot.CFrame = LocationToTP2 
+end
 })
 
-local Button = SecondTab:CreateButton({
-	Name = "Laundry",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+tpSection:AddButton({
+Name = "Gun Shop 2",
+Callback = function()
+local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+--warn(YourRoot.CFrame)
+--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+local LocationToTP2 = CFrame.new(66203, 123616, 5750)
+YourRoot.CFrame = LocationToTP2
+end
+})
+
+tpSection:AddButton({
+Name = "Exotic Guns",
+Callback = function()
+local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+--warn(YourRoot.CFrame)
+--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+local LocationToTP2 = CFrame.new(60841, 87609, -354)
+YourRoot.CFrame = LocationToTP2
+end
+})     
+
+
+tpSection:AddButton({
+    Name = "Laundry",
+    Callback = function()
+        local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
 		local LocationToTP2 = CFrame.new(-977, 254, -676)
 		YourRoot.CFrame = LocationToTP2
-	end,
+    end
+    })   
+    
+    
+
+tpSection:AddButton({
+ Name = "Bank",
+ Callback = function()  
+local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+--warn(YourRoot.CFrame)
+--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+local LocationToTP2 = CFrame.new(-131, 284, -1202)
+ YourRoot.CFrame = LocationToTP2 
+end
+}) 
+        
+        
+tpSection:AddButton({
+Name = "Off The Radar",
+Callback = function()  
+    local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+    --warn(YourRoot.CFrame)
+    --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+    local LocationToTP2 = CFrame.new(93430.7422, 14481.3281, 565.520691, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+    YourRoot.CFrame = LocationToTP2
+ end
 })
 
-local Button = SecondTab:CreateButton({
-	Name = "Bank",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-131, 284, -1202)
-		YourRoot.CFrame = LocationToTP2
-	end,
-})
 
-local Button = SecondTab:CreateButton({
-	Name = "Off The Radar",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(93430.7422, 14481.3281, 565.520691, 1, 0, 0, 0, 1, 0, 0, 0, 1)
-		YourRoot.CFrame = LocationToTP2
-	end,
-})
-
-local Button = SecondTab:CreateButton({
-	Name = "Hospital",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+tpSection:AddButton({
+    Name = "Hospital",
+    Callback = function()  
+        local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
 		local LocationToTP2 = CFrame.new(-1585, 253, -1223)
 		YourRoot.CFrame = LocationToTP2
-	end,
-})
+     end
+    })  
+    
+    
 
-local Button = SecondTab:CreateButton({
-	Name = "Dealership",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+    tpSection:AddButton({
+        Name = "Dealership",
+        Callback = function()  
+            local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
 		local LocationToTP2 = CFrame.new(-355, 253, -1247)
 		YourRoot.CFrame = LocationToTP2
-	end,
-})
+         end
+        })  
+        
+            tpSection:AddButton({
+                Name = "Drip Store",
+                Callback = function()  
+                    local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+                    --warn(YourRoot.CFrame)
+                    --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+                    local LocationToTP2 = CFrame.new(67463, 10489, 559)
+                    YourRoot.CFrame = LocationToTP2
+                 end
+                }) 
 
-local Button = SecondTab:CreateButton({
-	Name = "Drip Store",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(67463, 10489, 559)
-		YourRoot.CFrame = LocationToTP2
-	end,
-})
 
-local Button = SecondTab:CreateButton({
-	Name = "Exotic Dealer",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+
+                tpSection:AddButton({
+                    Name = "Exotic Dealer",
+                    Callback = function()  
+                        local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
 		local LocationToTP2 = CFrame.new(-1518.91614, 267.96759, -983.473572, 0.999397933, -0.0346962325, 0, 0.0346962325, 0.999397933, 0, 0, 0, 1)
 		YourRoot.CFrame = LocationToTP2
-	end,
-})
+                     end
+                    }) 
 
-local Button = SecondTab:CreateButton({
-	Name = "Chicken Shop",
-	Callback = function()
-		local yr = game.Players.LocalPlayer.Character.HumanoidRootPart
+
+
+
+                    tpSection:AddButton({
+                        Name = "Chicken Shop",
+                        Callback = function()  
+                            local yr = game.Players.LocalPlayer.Character.HumanoidRootPart
 		local tp2 = CFrame.new(-956.771484, 251.26651, -805.67218, 1, 0, 0, 0, 1, 0, 0, 0, 1)
 
 		yr.CFrame = tp2
-	end,
-})
+                         end
+                        }) 
 
-local Button = SecondTab:CreateButton({
-	Name = "Bank Tools",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+
+
+                        tpSection:AddButton({
+                            Name = "Bank Tools",
+                            Callback = function()  
+                                local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
 		local LocationToTP2 = CFrame.new(-350, 340, -555)
 		YourRoot.CFrame = LocationToTP2
-	end,
-})
+                             end
+                            }) 
 
-local Button = SecondTab:CreateButton({
-	Name = "Storage",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-31, 283, -546)
-		YourRoot.CFrame = LocationToTP2
-	end,
-})
 
-local Button = SecondTab:CreateButton({
-	Name = "Backpack Shop",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+
+
+
+                            tpSection:AddButton({
+                                Name = "Storage",
+                                Callback = function()  
+                                    local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+                                    --warn(YourRoot.CFrame)
+                                    --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+                                    local LocationToTP2 = CFrame.new(-31, 283, -546)
+                                    YourRoot.CFrame = LocationToTP2
+                                 end
+                                }) 
+
+
+
+
+
+                                tpSection:AddButton({
+                                    Name = "Backpack Shop",
+                                    Callback = function()  
+                                        local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
 		local LocationToTP2 = CFrame.new(-674, 254, -685)
 		YourRoot.CFrame = LocationToTP2
-	end,
-})
+                                     end
+                                    }) 
 
-local Button = SecondTab:CreateButton({
-	Name = "Watch Shop",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-		--warn(YourRoot.CFrame)
-		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-122, 284, -1171)
-		YourRoot.CFrame = LocationToTP2
-	end,
-})
 
-local Button = SecondTab:CreateButton({
-	Name = "Penthouse",
-	Callback = function()
-		local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+
+
+                                    
+                                tpSection:AddButton({
+                                    Name = "Watch Shop",
+                                    Callback = function()  
+                                        local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+                                        --warn(YourRoot.CFrame)
+                                        --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+                                        local LocationToTP2 = CFrame.new(-122, 284, -1171)
+                                        YourRoot.CFrame = LocationToTP2
+                                     end
+                                    }) 
+
+
+                                    tpSection:AddButton({
+                                        Name = "Penthouse",
+                                        Callback = function()  
+                                            local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
 		local LocationToTP2 = CFrame.new(-22, 417, -599)
 		YourRoot.CFrame = LocationToTP2
-	end,
-})
+                                         end
+                                        }) 
+------------------------------------------------------------------------------------------------------------------------------------------
 
-
-local ThirdTab = Window:CreateTab("Misc", 4483362458) -- Title, Image
-local Section = ThirdTab:CreateSection("Main")
-local Button = ThirdTab:CreateButton({
-	Name = "Instant ProximityPrompt",
-	Callback = function()
-
-        local function ProximityPromptDuration(HoldDur)
-           for i,v in workspace:GetDescendants() do
-                if v:IsA("ProximityPrompt") then
-                    v.HoldDuration = HoldDur
-                end
-           end
-        end
-
-        ProximityPromptDuration(0)
-
-       workspace.DescendantAdded:Connect(function(Added)
-            if Added:IsA("ProximityPrompt") then
-                ProximityPromptDuration(0)
-            end
-       end)
-
-       Rayfield:Notify({
-        Title = "Tha Bronx 2",
-        Content = "Instant Prompts Toggled.",
-        Duration = 2,
-        Image = 4483362458,
+local tresTab = PepsisWorld:CreateTab({
+    Name = "Buys"
     })
-       
-	end,
 
+    local BuysSection = tresTab:CreateSection({
+        Name = "Shop"
+    })
+
+    BuysSection:AddButton({
+        Name = "Shiesty",
+        Callback = function()  
+            game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("Shiesty")
+         end
+        }) 
+
+
+        BuysSection:AddButton({
+            Name = "Water",
+            Callback = function()  
+                game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("Water")
+             end
+            }) 
+
+
+            BuysSection:AddButton({
+                Name = "AppleJuice",
+                Callback = function()  
+                    game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("AppleJuice")
+                 end
+                }) 
+
+
+
+                BuysSection:AddButton({
+                    Name = "GreenAppleJuice",
+                    Callback = function()  
+                        game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("GreenAppleJuice")
+                     end
+                    }) 
+
+
+                    
+                BuysSection:AddButton({
+                    Name = "BluGloves",
+                    Callback = function()  
+                        game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("BluGloves")
+                     end
+                    }) 
+
+
+                    BuysSection:AddButton({
+                        Name = "WhiteGloves",
+                        Callback = function()  
+                            game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("WhiteGloves")
+                         end
+                        })
+                        
+                        BuysSection:AddButton({
+                            Name = "BlackGloves",
+                            Callback = function()  
+                                game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("BlackGloves")
+                             end
+                            }) 
+
+
+                            BuysSection:AddButton({
+                                Name = "RawSteak",
+                                Callback = function()  
+                                    game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("RawSteak")
+                                 end
+                                }) 
+
+
+                                BuysSection:AddButton({
+                                    Name = "RawChicken",
+                                    Callback = function()  
+                                        game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer("RawChicken")
+                                     end
+                                    }) 
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+local BuyshSection = tresTab:CreateSection({
+    Name = "Exotic Shop"
 })
 
-local Button = ThirdTab:CreateButton({
-	Name = "Inf Stamina",
-	Callback = function()
-		game.Players.LocalPlayer.PlayerGui.Run.Frame.Frame.Frame["StaminaBarScript"].Disabled = true
-
-        Rayfield:Notify({
-            Title = "Tha Bronx 2",
-            Content = "Infinite Stamina Toggled.",
-            Duration = 2,
-            Image = 4483362458,
-        })
-	end,
-})
-
-local Button = ThirdTab:CreateButton({
-	Name = "Inf Sleep",
-	Callback = function()
-		game.Players.LocalPlayer.PlayerGui.SleepGui.Frame.sleep.SleepBar["sleepScript"].Disabled = true
-
-        Rayfield:Notify({
-            Title = "Tha Bronx 2",
-            Content = "Infinite Sleep Toggled.",
-            Duration = 2,
-            Image = 4483362458,
-        })
-	end,
-})
-
-local Button = ThirdTab:CreateButton({
-	Name = "Inf Hunger",
-	Callback = function()
-		game.Players.LocalPlayer.PlayerGui.Hunger.Frame.Frame.Frame["HungerBarScript"].Disabled = true
-
-        Rayfield:Notify({
-            Title = "Tha Bronx 2",
-            Content = "Infinite Hunger Toggled.",
-            Duration = 2,
-            Image = 4483362458,
-        })
-	end,
-})
-
-local Section = ThirdTab:CreateSection("Player")
-local Slider = ThirdTab:CreateSlider({
-	Name = "WalkSpeed",
-	Range = {0, 300},
-	Increment = 10,
-	Suffix = "Speed",
-	CurrentValue = 0,
-	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
-	end,
-})
-
-local Slider = ThirdTab:CreateSlider({
-	Name = "JumpPower",
-	Range = {0, 300},
-	Increment = 10,
-	Suffix = "Power",
-	CurrentValue = 10,
-	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
-	end,
-})
+BuyshSection:AddButton({
+    Name = "FakeCard",
+    Callback = function()  
+        game:GetService("ReplicatedStorage"):WaitForChild("ExoticShopRemote"):InvokeServer("FakeCard")
+     end
+    })
+    
+    BuyshSection:AddButton({
+        Name = "GrapeDrank",
+        Callback = function()  
+            game:GetService("ReplicatedStorage"):WaitForChild("ExoticShopRemote"):InvokeServer("GrapeDrank")
+         end
+        }) 
 
 
-local Section = ThirdTab:CreateSection("Gui")
-local Button = ThirdTab:CreateButton({
-	Name = "Market Gui",
-	Callback = function()
-		game.Players.LocalPlayer.PlayerGui["Bronx Market 2"].Enabled = true 
-	end,
-})
-
-local Button = ThirdTab:CreateButton({
-	Name = "Exotic Gui",
-	Callback = function()
-		game.Players.LocalPlayer.PlayerGui["Exotic Shop"].Enabled = true
-	end,
-})
-
-local Button = ThirdTab:CreateButton({
-	Name = "Shop Gui",
-	Callback = function()
-		game.Players.LocalPlayer.PlayerGui["ShopGUI"].Enabled = true
-	end,
-})
-
-local CurrentSelectedToBuy = "nil"
-
-local FourthTab = Window:CreateTab("Buys", 4483362458) -- Title, Image
-local Section = FourthTab:CreateSection("Shop")
-local Dropdown = FourthTab:CreateDropdown({
-    Name = "Items",
-    Options = {"Water", "AppleJuice", "GreenAppleJuice", "Shiesty", "BlackGloves", "WhiteGloves", "BluGloves", "RawChicken", "RawSteak"},
-    CurrentOption = {"Water"},
-    MultipleOptions = false,
-    Flag = "Dropdown1",
-    Callback = function(Options)
-        CurrentSelectedToBuy = table.unpack(Options)
-    end,
- })
- 
- local Button = FourthTab:CreateButton({
-	Name = "Purchase",
-	Callback = function()
-		if CurrentSelectedToBuy ~= "nil" then
-            game:GetService("ReplicatedStorage"):WaitForChild("ShopRemote"):InvokeServer(CurrentSelectedToBuy)
-        elseif CurrentSelectedToBuy == "GrapeDrank" then
-            game.ReplicatedStorage.ExoticShopRemote:InvokeServer("GrapeDrank")
-        end
-	end,
-})
-
-
-local Section = FourthTab:CreateSection("Exotic Dealer")
-local Dropdown = FourthTab:CreateDropdown({
-    Name = "Items",
-    Options = {"FakeCard", "GrapeDrank", "RiceBag", "Seeds" },
-    CurrentOption = {"FakeCard"},
-    MultipleOptions = false,
-    Flag = "Dropdown1",
-    Callback = function(Options)
-        CurrentSelectedToBuy = table.unpack(Options)
-    end,
- })
-
- local Button = FourthTab:CreateButton({
-	Name = "Purchase",
-	Callback = function()
-		if CurrentSelectedToBuy ~= "nil" then
-            game:GetService("ReplicatedStorage"):WaitForChild("ExoticShopRemote"):InvokeServer(CurrentSelectedToBuy)
-        elseif CurrentSelectedToBuy == "GrapeDrank" then
-            game.ReplicatedStorage.ExoticShopRemote:InvokeServer("GrapeDrank")
-        end
-	end,
-})
+            BuyshSection:AddButton({
+                Name = "RiceBag",
+                Callback = function()  
+                    game:GetService("ReplicatedStorage"):WaitForChild("ExoticShopRemote"):InvokeServer("RiceBag")
+                 end
+                })
+                
+                
+                BuyshSection:AddButton({
+                    Name = "Seeds",
+                    Callback = function()  
+                        game:GetService("ReplicatedStorage"):WaitForChild("ExoticShopRemote"):InvokeServer("Seeds")
+                     end
+                    }) 
+------------------------------------------------------------------------------------------------------------------------------------------------
