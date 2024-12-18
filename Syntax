@@ -256,6 +256,54 @@ VisualsSection:AddButton({
                     game.Players.LocalPlayer.PlayerGui["ShopGUI"].Enabled = true
                 end
                 })
+
+
+                local HitboxSection = GeneralTab:CreateSection({
+                    Name = "Hitbox"
+                 })
+
+                 -- Flag to track the toggle state
+local isHitboxExpanded = false
+
+-- Function to expand hitboxes
+local function expandHitboxes()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character then
+            for _, part in pairs(player.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.Size = part.Size + Vector3.new(3, 3, 3) -- Adjust the increment as needed
+                end
+            end
+        end
+    end
+end
+
+-- Function to reset hitboxes to their original size
+local function resetHitboxes()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character then
+            for _, part in pairs(player.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.Size = part.Size - Vector3.new(3, 3, 3) -- Ensure this matches the increment used in expandHitboxes
+                end
+            end
+        end
+    end
+end
+
+-- Adding the toggle to the FarmingSection
+HitboxSection:AddToggle({
+    Name = "Hitbox",
+    Flag = "VisualsSection_ExpandHitboxes",
+    Callback = function(state)
+        isHitboxExpanded = state
+        if isHitboxExpanded then
+            expandHitboxes()
+        else
+            resetHitboxes()
+        end
+    end
+})
 -------------------------------------------------------------------------------------------
 local SecondTab = PepsisWorld:CreateTab({
 Name = "Teleports"
