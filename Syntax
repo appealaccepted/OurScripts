@@ -16,171 +16,320 @@ local VisualsSection = GeneralTab:CreateSection({
     Name = "Visuals"
  })
 
-VisualsSection:AddButton({
-    Name = "Skelly",
-    Callback = function()
-       local Players = game:GetService("Players")
-         local RunService = game:GetService("RunService")
-         local Camera = workspace.CurrentCamera
-         local UserInputService = game:GetService("UserInputService")
-         
-         local skeletonEnabled = false -- ESP starts off
-         local playerLines = {} -- Stores drawing lines for all players
-         local playerTags = {} -- Stores name tags for each player
-         
-         -- Body parts to connect for skeleton
-         local bodyParts = {
-             { "Head", "UpperTorso" },
-             { "UpperTorso", "LowerTorso" },
-             { "LeftUpperArm", "LeftLowerArm" },
-             { "LeftLowerArm", "LeftHand" },
-             { "RightUpperArm", "RightLowerArm" },
-             { "RightLowerArm", "RightHand" },
-             { "LeftUpperLeg", "LeftLowerLeg" },
-             { "LeftLowerLeg", "LeftFoot" },
-             { "RightUpperLeg", "RightLowerLeg" },
-             { "RightLowerLeg", "RightFoot" },
-             { "UpperTorso", "LeftUpperArm" },
-             { "UpperTorso", "RightUpperArm" },
-             { "LowerTorso", "LeftUpperLeg" },
-             { "LowerTorso", "RightUpperLeg" },
-         }
-         
-         -- Function to create a line using the Drawing API
-         local function createLine()
-             local line = Drawing.new("Line")
-             line.Thickness = 1.5
-             line.Color = Color3.new(1, 1, 1) -- White
-             line.Transparency = 1
-             line.Visible = false
-             return line
+ local Players = game:GetService("Players")
+ local RunService = game:GetService("RunService")
+ local Camera = workspace.CurrentCamera
+ local UserInputService = game:GetService("UserInputService")
+ 
+ local skeletonEnabled = false -- ESP starts off
+ local playerLines = {} -- Stores drawing lines for all players
+ local playerTags = {} -- Stores name tags for each player
+ 
+ -- Body parts to connect for skeleton
+ local bodyParts = {
+     { "Head", "UpperTorso" },
+     { "UpperTorso", "LowerTorso" },
+     { "LeftUpperArm", "LeftLowerArm" },
+     { "LeftLowerArm", "LeftHand" },
+     { "RightUpperArm", "RightLowerArm" },
+     { "RightLowerArm", "RightHand" },
+     { "LeftUpperLeg", "LeftLowerLeg" },
+     { "LeftLowerLeg", "LeftFoot" },
+     { "RightUpperLeg", "RightLowerLeg" },
+     { "RightLowerLeg", "RightFoot" },
+     { "UpperTorso", "LeftUpperArm" },
+     { "UpperTorso", "RightUpperArm" },
+     { "LowerTorso", "LeftUpperLeg" },
+     { "LowerTorso", "RightUpperLeg" },
+ }
+ 
+ -- Function to create a line using the Drawing API
+ local function createLine()
+     local line = Drawing.new("Line")
+     line.Thickness = 1.5
+     line.Color = Color3.new(1, 1, 1) -- White
+     line.Transparency = 1
+     line.Visible = false
+     return line
+ end
+ 
+ -- Function to create a name tag for each player
+ local function createNameTag()
+     local nameTag = Drawing.new("Text")
+     nameTag.Size = 14 -- Adjust the size to be readable
+     nameTag.Color = Color3.new(1, 1, 1) -- White
+     nameTag.Transparency = 1
+     nameTag.Center = true -- Centers the text above the player's head
+     nameTag.Outline = true -- Adds an outline for better visibility
+     nameTag.Visible = false
+     return nameTag
+ end
+ 
+ -- Toggle ESP visibility
+ local function toggleESP(state)
+     skeletonEnabled = state
+     if not skeletonEnabled then
+         -- Hide all lines and tags when ESP is disabled
+         for _, lines in pairs(playerLines) do
+             for _, line in pairs(lines) do
+                 line.Visible = false
+             end
          end
-         
-         -- Function to create a name tag for each player
-         local function createNameTag()
-             local nameTag = Drawing.new("Text")
-             nameTag.Size = 14 -- Adjust the size to be readable
-             nameTag.Color = Color3.new(1, 1, 1) -- White
-             nameTag.Transparency = 1
-             nameTag.Center = true -- Centers the text above the player's head
-             nameTag.Outline = true -- Adds an outline for better visibility
+         for _, nameTag in pairs(playerTags) do
              nameTag.Visible = false
-             return nameTag
          end
-         
-         -- Toggle ESP visibility
-         local function toggleESP()
-             skeletonEnabled = not skeletonEnabled
-             if not skeletonEnabled then
-                 -- Hide all lines and tags when ESP is disabled
-                 for _, lines in pairs(playerLines) do
-                     for _, line in pairs(lines) do
-                         line.Visible = false
-                     end
-                 end
-                 for _, nameTag in pairs(playerTags) do
+     end
+ end
+ 
+ -- Render ESP on each frame
+ RunService.RenderStepped:Connect(function()
+     if not skeletonEnabled then return end
+ 
+     for _, player in ipairs(Players:GetPlayers()) do
+         if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+             local character = player.Character
+             local humanoid = character:FindFirstChild("Humanoid")
+             local head = character:FindFirstChild("Head")
+             local nameTag = playerTags[player] or createNameTag()
+ 
+             -- Create the name tag if it doesn't exist
+             if not playerTags[player] then
+                 playerTags[player] = nameTag
+             end
+ 
+             if head and humanoid and humanoid.Health > 0 then
+                 -- Update the position and text of the name tag
+                 local screenPos = Camera:WorldToViewportPoint(head.Position)
+                 if screenPos.Z > 0 then
+                     nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - 25) -- Above the head
+                     nameTag.Text = player.Name -- Set the username
+                     nameTag.Visible = true
+                 else
                      nameTag.Visible = false
                  end
-             end
-         end
-         
-         -- Keybinding to toggle ESP
-         UserInputService.InputBegan:Connect(function(input, gameProcessed)
-             if not gameProcessed and input.KeyCode == Enum.KeyCode.H then
-                 toggleESP()
-             end
-         end)
-         
-         -- Render ESP on each frame
-         RunService.RenderStepped:Connect(function()
-             if not skeletonEnabled then return end
-         
-             for _, player in ipairs(Players:GetPlayers()) do
-                 if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
-                     local character = player.Character
-                     local humanoid = character:FindFirstChild("Humanoid")
-                     local head = character:FindFirstChild("Head")
-                     local nameTag = playerTags[player] or createNameTag()
-         
-                     -- Create the name tag if it doesn't exist
-                     if not playerTags[player] then
-                         playerTags[player] = nameTag
-                     end
-         
-                     if head and humanoid and humanoid.Health > 0 then
-                         -- Update the position and text of the name tag
-                         local screenPos = Camera:WorldToViewportPoint(head.Position)
-                         if screenPos.Z > 0 then
-                             nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - 25) -- Above the head
-                             nameTag.Text = player.Name -- Set the username
-                             nameTag.Visible = true
+ 
+                 playerLines[player] = playerLines[player] or {}
+                 local lineIndex = 1
+ 
+                 -- Draw skeleton lines
+                 for _, connection in ipairs(bodyParts) do
+                     local part1 = character:FindFirstChild(connection[1])
+                     local part2 = character:FindFirstChild(connection[2])
+ 
+                     if part1 and part2 then
+                         local line = playerLines[player][lineIndex] or createLine()
+                         playerLines[player][lineIndex] = line
+ 
+                         local pos1, onScreen1 = Camera:WorldToViewportPoint(part1.Position)
+                         local pos2, onScreen2 = Camera:WorldToViewportPoint(part2.Position)
+ 
+                         if onScreen1 and onScreen2 then
+                             line.From = Vector2.new(pos1.X, pos1.Y)
+                             line.To = Vector2.new(pos2.X, pos2.Y)
+                             line.Visible = true
                          else
-                             nameTag.Visible = false
+                             line.Visible = false
                          end
-         
-                         playerLines[player] = playerLines[player] or {}
-                         local lineIndex = 1
-         
-                         -- Draw skeleton lines
-                         for _, connection in ipairs(bodyParts) do
-                             local part1 = character:FindFirstChild(connection[1])
-                             local part2 = character:FindFirstChild(connection[2])
-         
-                             if part1 and part2 then
-                                 local line = playerLines[player][lineIndex] or createLine()
-                                 playerLines[player][lineIndex] = line
-         
-                                 local pos1, onScreen1 = Camera:WorldToViewportPoint(part1.Position)
-                                 local pos2, onScreen2 = Camera:WorldToViewportPoint(part2.Position)
-         
-                                 if onScreen1 and onScreen2 then
-                                     line.From = Vector2.new(pos1.X, pos1.Y)
-                                     line.To = Vector2.new(pos2.X, pos2.Y)
-                                     line.Visible = true
-                                 else
-                                     line.Visible = false
-                                 end
-                             end
-         
-                             lineIndex = lineIndex + 1
-                         end
-         
-                         -- Hide unused lines for this player
-                         for i = lineIndex, #playerLines[player] do
-                             if playerLines[player][i] then
-                                 playerLines[player][i].Visible = false
-                             end
-                         end
-                     else
-                         nameTag.Visible = false
                      end
-                 elseif playerLines[player] then
-                     -- Hide lines and tags for players without valid characters
-                     for _, line in pairs(playerLines[player]) do
-                         line.Visible = false
-                     end
-                     if playerTags[player] then
-                         playerTags[player].Visible = false
+ 
+                     lineIndex = lineIndex + 1
+                 end
+ 
+                 -- Hide unused lines for this player
+                 for i = lineIndex, #playerLines[player] do
+                     if playerLines[player][i] then
+                         playerLines[player][i].Visible = false
                      end
                  end
+             else
+                 nameTag.Visible = false
              end
-         end)
-         
-         -- Cleanup lines and tags when players leave
-         Players.PlayerRemoving:Connect(function(player)
-             if playerLines[player] then
-                 for _, line in pairs(playerLines[player]) do
-                     line:Remove()
-                 end
-                 playerLines[player] = nil
+         elseif playerLines[player] then
+             -- Hide lines and tags for players without valid characters
+             for _, line in pairs(playerLines[player]) do
+                 line.Visible = false
              end
              if playerTags[player] then
-                 playerTags[player]:Remove()
-                 playerTags[player] = nil
+                 playerTags[player].Visible = false
              end
-         end)
-     end,
+         end
+     end
+ end)
+ 
+ -- Cleanup lines and tags when players leave
+ Players.PlayerRemoving:Connect(function(player)
+     if playerLines[player] then
+         for _, line in pairs(playerLines[player]) do
+             line:Remove()
+         end
+         playerLines[player] = nil
+     end
+     if playerTags[player] then
+         playerTags[player]:Remove()
+         playerTags[player] = nil
+     end
+ end)
+ 
+ -- GUI toggle button for ESP
+ VisualsSection:AddToggle({
+     Name = 'Skeleton Esp',
+     Flag = 'FarmingSection_ToggleESP',
+     Callback = function(state)
+         toggleESP(state)
+     end
  })
+
+ local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local espEnabled = false
+local playerBoxes = {} -- Store boxes for all players
+local playerHealthBars = {} -- Store health bars for all players
+local playerNames = {} -- Store name displays for all players
+
+-- Function to create a box using the Drawing API
+local function createBox()
+    local box = Drawing.new("Square")
+    box.Thickness = 2
+    box.Color = Color3.new(1, 0, 0) -- Red
+    box.Transparency = 1
+    box.Filled = false
+    box.Visible = false
+    return box
+end
+
+-- Function to create a health bar using the Drawing API
+local function createHealthBar()
+    local healthBar = Drawing.new("Square")
+    healthBar.Thickness = 1
+    healthBar.Color = Color3.new(0, 1, 0) -- Green (for full health)
+    healthBar.Transparency = 1
+    healthBar.Filled = true
+    healthBar.Visible = false
+    return healthBar
+end
+
+-- Function to create a name tag
+local function createNameTag()
+    local nameTag = Drawing.new("Text")
+    nameTag.Size = 16 -- Slightly larger
+    nameTag.Color = Color3.new(1, 1, 1) -- White
+    nameTag.Transparency = 1
+    nameTag.Center = true -- Center the text
+    nameTag.Outline = true -- Add an outline for better visibility
+    nameTag.Visible = false
+    return nameTag
+end
+
+-- Toggle ESP visibility
+local function toggleESP(state)
+    espEnabled = state
+    if not espEnabled then
+        -- Hide all ESP elements when disabled
+        for _, box in pairs(playerBoxes) do
+            box.Visible = false
+        end
+        for _, healthBar in pairs(playerHealthBars) do
+            healthBar.Visible = false
+        end
+        for _, nameTag in pairs(playerNames) do
+            nameTag.Visible = false
+        end
+    end
+end
+
+-- Update ESP elements for each player
+RunService.RenderStepped:Connect(function()
+    if not espEnabled then return end
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+            local character = player.Character
+            local humanoid = character:FindFirstChild("Humanoid")
+            local head = character:FindFirstChild("Head")
+            local box = playerBoxes[player] or createBox()
+            local healthBar = playerHealthBars[player] or createHealthBar()
+            local nameTag = playerNames[player] or createNameTag()
+
+            -- Create the ESP elements if they don't exist
+            if not playerBoxes[player] then playerBoxes[player] = box end
+            if not playerHealthBars[player] then playerHealthBars[player] = healthBar end
+            if not playerNames[player] then playerNames[player] = nameTag end
+
+            if head and humanoid and humanoid.Health > 0 then
+                -- Get the position of the player's head and torso
+                local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                local torsoPos = character:FindFirstChild("HumanoidRootPart").Position
+                local distance = (LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position - torsoPos).Magnitude
+
+                -- Scale down the ESP elements based on distance
+                local scaleFactor = math.clamp(1 / (distance / 10), 0.4, 1) -- Clamps scale between 0.4 and 1
+
+                if onScreen then
+                    -- Update the box position and size (scaled)
+                    box.Size = Vector2.new(75 * scaleFactor, 100 * scaleFactor) -- Smaller box around the player
+                    box.Position = Vector2.new(screenPos.X - (37.5 * scaleFactor), screenPos.Y - (50 * scaleFactor))
+                    box.Visible = true
+
+                    -- Update the health bar position and size (scaled)
+                    local healthPercent = humanoid.Health / humanoid.MaxHealth
+                    healthBar.Size = Vector2.new(5 * scaleFactor, 100 * scaleFactor * healthPercent) -- Height proportional to health
+                    healthBar.Position = Vector2.new(box.Position.X - (10 * scaleFactor), box.Position.Y + (100 * scaleFactor * (1 - healthPercent))) -- Align next to box
+                    healthBar.Color = Color3.new(1 - healthPercent, healthPercent, 0) -- Red to green based on health
+                    healthBar.Visible = true
+
+                    -- Update the name tag position (scaled)
+                    nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - (60 * scaleFactor)) -- Above the box
+                    nameTag.Size = 16 * scaleFactor -- Scale the font size
+                    nameTag.Text = player.Name -- Show the player's name
+                    nameTag.Visible = true
+                else
+                    box.Visible = false
+                    healthBar.Visible = false
+                    nameTag.Visible = false
+                end
+            else
+                box.Visible = false
+                healthBar.Visible = false
+                nameTag.Visible = false
+            end
+        elseif playerBoxes[player] then
+            -- Hide boxes and tags for players without valid characters
+            playerBoxes[player].Visible = false
+            playerHealthBars[player].Visible = false
+            playerNames[player].Visible = false
+        end
+    end
+end)
+
+-- Cleanup boxes and tags when players leave
+Players.PlayerRemoving:Connect(function(player)
+    if playerBoxes[player] then
+        playerBoxes[player]:Remove()
+        playerBoxes[player] = nil
+    end
+    if playerHealthBars[player] then
+        playerHealthBars[player]:Remove()
+        playerHealthBars[player] = nil
+    end
+    if playerNames[player] then
+        playerNames[player]:Remove()
+        playerNames[player] = nil
+    end
+end)
+
+-- GUI toggle button for ESP
+VisualsSection:AddToggle({
+    Name = 'Square Esp',
+    Flag = 'FarmingSection_TogglePlayerESP',
+    Callback = function(state)
+        toggleESP(state)
+    end
+})
+
+ 
 
  local PlayerSection = GeneralTab:CreateSection({
     Name = "Player"
@@ -293,7 +442,7 @@ end
 
 -- Adding the toggle to the FarmingSection
 HitboxSection:AddToggle({
-    Name = "Hitbox",
+    Name = "Hitbox Humanoid",
     Flag = "VisualsSection_ExpandHitboxes",
     Callback = function(state)
         isHitboxExpanded = state
@@ -304,6 +453,131 @@ HitboxSection:AddToggle({
         end
     end
 })
+
+
+local hitboxEnabled = false
+
+-- Function to toggle hitbox for other players
+local function toggleHitbox(state)
+    hitboxEnabled = state
+    local player = game.Players.LocalPlayer
+    local players = game:GetService('Players')
+    
+    for _, otherPlayer in pairs(players:GetPlayers()) do
+        if otherPlayer ~= player then
+            local character = otherPlayer.Character or otherPlayer.CharacterAdded:Wait()
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            
+            if hitboxEnabled then
+                -- Increase the hitbox size and apply transparency and color for other players
+                humanoidRootPart.Size = Vector3.new(10, 10, 10) -- Larger hitbox
+                humanoidRootPart.Transparency = 0.7 -- 70% transparency
+                humanoidRootPart.BrickColor = BrickColor.new('Bright blue') -- Blue color
+                humanoidRootPart.CanCollide = false -- Disable collisions
+                print('Hitbox enabled for', otherPlayer.Name)
+            else
+                -- Reset hitbox size and settings for other players
+                humanoidRootPart.Size = Vector3.new(2, 2, 1) -- Default size
+                humanoidRootPart.Transparency = 1 -- Reset transparency
+                humanoidRootPart.BrickColor = BrickColor.new('Medium stone grey') -- Default color
+                humanoidRootPart.CanCollide = true
+                print('Hitbox disabled for', otherPlayer.Name)
+            end
+        end
+    end
+end
+
+-- GUI toggle button for hitbox
+HitboxSection:AddToggle({
+    Name = 'Hitbox Box',
+    Flag = 'FarmingSection_ToggleHitbox',
+    Callback = function(state)
+        toggleHitbox(state)
+    end
+})
+
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local originalSizes = {} -- Store original head sizes for all players
+local hitboxEnabled = false
+
+-- Function to scale the head hitbox
+local function scaleHeadHitbox(player, scale)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+        if not originalSizes[player] then
+            originalSizes[player] = head.Size -- Save the original size if not already saved
+        end
+        head.Size = originalSizes[player] * scale -- Scale the head
+        head.CanCollide = false -- Disable collision for fairness
+    end
+end
+
+-- Function to reset the head hitbox to its original size
+local function resetHeadHitbox(player)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+        if originalSizes[player] then
+            head.Size = originalSizes[player] -- Reset to original size
+        end
+    end
+end
+
+-- Toggle the hitbox scaling on or off
+local function toggleHitbox(state)
+    hitboxEnabled = state
+    if not hitboxEnabled then
+        -- Reset hitboxes when disabled
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                resetHeadHitbox(player)
+            end
+        end
+    end
+end
+
+-- Apply the hitbox scaling to players
+local function applyHitboxScalingToAll()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            scaleHeadHitbox(player, 2) -- Make the head hitbox twice as big
+        end
+    end
+end
+
+-- Update the hitboxes for players when enabled
+RunService.RenderStepped:Connect(function()
+    if hitboxEnabled then
+        applyHitboxScalingToAll()
+    end
+end)
+
+-- Ensure that the head hitbox is scaled for new players who join
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if hitboxEnabled then
+            scaleHeadHitbox(player, 2) -- Scale head hitbox for newly added players
+        end
+    end)
+end)
+
+-- Reset hitbox when players leave
+Players.PlayerRemoving:Connect(function(player)
+    resetHeadHitbox(player)
+end)
+
+-- GUI toggle button for hitbox scaling
+HitboxSection:AddToggle({
+    Name = 'Bigger Head',
+    Flag = 'FarmingSection_ToggleHeadHitbox',
+    Callback = function(state)
+        toggleHitbox(state)
+    end
+})
+
+
 -------------------------------------------------------------------------------------------
 local SecondTab = PepsisWorld:CreateTab({
 Name = "Teleports"
