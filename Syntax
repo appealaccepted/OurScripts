@@ -1342,3 +1342,100 @@ hop()
 
      end
     }) 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+local farmTab = PepsisWorld:CreateTab({
+    Name = "Farming"
+})
+
+ local farmSection = farmTab:CreateSection({
+    Name = "Teleports"
+ })
+
+ farmSection:AddButton({
+    Name = "Rice Buy",
+    Callback = function()
+    local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+    --warn(YourRoot.CFrame)
+    --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+    local LocationToTP2 = CFrame.new(51373, 21680, 5842)
+    YourRoot.CFrame = LocationToTP2
+    end
+    })
+
+    farmSection:AddButton({
+        Name = "Rice Sell",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(81062.2422, 133135.266, 169.988525, 0.766061246, -0, -0.642767608, 0, 1, -0, 0.642767608, 0, 0.766061246)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+       farmSection:AddButton({
+        Name = "Pot Place 1",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-1031, 312, -920)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+
+       farmSection:AddButton({
+        Name = "Pot Place 2",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-60, 417, -596)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+
+       farmSection:AddButton({
+        Name = "Pot Place 3",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-42, 417, -460)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+
+       farmSection:AddButton({
+        Name = "Pot Place 4",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-41, 417, -528)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+
+       farmSection:AddButton({
+        Name = "Pot Place 5",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-42, 417, -508)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+
+    
+
+
