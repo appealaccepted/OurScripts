@@ -1437,5 +1437,32 @@ local farmTab = PepsisWorld:CreateTab({
 
 
     
+       local farmsSection = farmTab:CreateSection({
+        Name = "Robberies"
+     })
 
+
+     farmsSection:AddButton({
+        Name = "House 1",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-595, 258, -698)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+       farmsSection:AddButton({
+        Name = "House 2",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-596, 258, -724)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+    
 
