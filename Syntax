@@ -533,42 +533,61 @@ local function removeNameTag(player)
     end
 end
 
+-- Function to handle ESP for a player's character when added
+local function onCharacterAdded(player)
+    player.CharacterRemoving:Connect(function()
+        removeNameTag(player) -- Remove the nametag when the character dies
+    end)
+
+    -- Delay the creation of the NameTag to make sure the Head exists after respawn
+    player.CharacterAdded:Connect(function()
+        wait(0.1) -- Small delay to ensure character and head exist
+        if ESPEnabled then
+            createNameTag(player)
+        end
+    end)
+
+    -- If the character already exists, create the name tag
+    if player.Character then
+        wait(0.1) -- Ensures the head is fully loaded
+        if ESPEnabled then
+            createNameTag(player)
+        end
+    end
+end
+
 -- Function to toggle ESP on or off
 local function toggleESP(enabled)
     ESPEnabled = enabled
     if ESPEnabled then
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= Players.LocalPlayer then
-                createNameTag(player)
+                onCharacterAdded(player)
             end
         end
     else
-        for player, billboard in pairs(NameTags) do
+        for player, _ in pairs(NameTags) do
             removeNameTag(player)
         end
     end
 end
 
--- Listen for player addition/removal
+-- Listen for new players joining
 Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        if ESPEnabled then
-            createNameTag(player)
-        end
-    end)
+    -- Handle ESP for new players
+    if ESPEnabled then
+        onCharacterAdded(player)
+    end
 end)
 
+-- Remove NameTag when a player leaves
 Players.PlayerRemoving:Connect(function(player)
     removeNameTag(player)
 end)
 
--- Update NameTags when characters are added
-if ESPEnabled then
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player.Character then
-            createNameTag(player)
-        end
-    end
+-- Initialize connections for existing players (but don’t create nametags yet)
+for _, player in ipairs(Players:GetPlayers()) do
+    onCharacterAdded(player)
 end
 
 -- GUI Toggle Button Implementation
@@ -578,9 +597,10 @@ VisualsSection:AddToggle({
     Name = "Name Esp",
     Flag = "FarmingSection_ShowNames",
     Callback = function(state)
-        toggleESP(state)
+        toggleESP(state) -- Toggle ESP on or off when button is clicked
     end
 })
+
 
 
  
