@@ -330,7 +330,86 @@ VisualsSection:AddToggle({
 })
 
  
+-- ATM ESP Script with GUI Toggle
+-- Highlights all ATMs in the game world with a toggle button
 
+local ATMs = {} -- Table to store found ATMs
+local highlightColor = Color3.fromRGB(0, 255, 0) -- Green color for the ESP
+local espEnabled = false -- Toggle state
+
+-- Function to create a highlight
+local function createHighlight(item)
+    if item:FindFirstChild("Highlight") then return end -- Avoid duplicates
+
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = item
+    highlight.Adornee = item
+    highlight.FillColor = highlightColor
+    highlight.OutlineTransparency = 0.5
+    highlight.FillTransparency = 0.7
+end
+
+-- Function to remove highlights
+local function removeHighlight(item)
+    if item:FindFirstChild("Highlight") then
+        item.Highlight:Destroy()
+    end
+end
+
+-- Function to toggle ESP on or off
+local function toggleESP(state)
+    espEnabled = state
+
+    if espEnabled then
+        for _, atm in pairs(ATMs) do
+            createHighlight(atm)
+        end
+    else
+        for _, atm in pairs(ATMs) do
+            removeHighlight(atm)
+        end
+    end
+end
+
+-- Function to find all ATMs
+local function findATMs()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj.Name:lower():find("atm") and obj:IsA("Model") then -- Check if it's an ATM
+            table.insert(ATMs, obj)
+            if espEnabled then
+                createHighlight(obj)
+            end
+        end
+    end
+end
+
+-- Update ESP when new objects are added
+workspace.DescendantAdded:Connect(function(obj)
+    if obj.Name:lower():find("ATM") and obj:IsA("Model") then
+        table.insert(ATMs, obj)
+        if espEnabled then
+            createHighlight(obj)
+        end
+    end
+end)
+
+-- Initial scan for ATMs
+findATMs()
+
+-- GUI Toggle Button
+VisualsSection:AddToggle({
+    Name = "Atm Esp",
+    Flag = "FarmingSection_ATMESP",
+    Callback = function(state)
+        toggleESP(state)
+    end
+})
+
+print("[ESP] ATM ESP script loaded with GUI toggle.")
+
+
+
+---------------------------------------------------------------------------------------------------------
  local PlayerSection = GeneralTab:CreateSection({
     Name = "Player"
  })
