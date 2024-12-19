@@ -488,6 +488,101 @@ VisualsSection:AddToggle({
     end
 })
 
+
+--// Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+--// Variables
+local ESPEnabled = false
+local NameTags = {}
+
+-- Function to create a nametag above a player's head
+local function createNameTag(player)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+        if not NameTags[player] then
+            local billboard = Instance.new("BillboardGui")
+            billboard.Name = "NameTag"
+            billboard.Parent = head
+            billboard.Adornee = head
+            billboard.Size = UDim2.new(0, 100, 0, 20)
+            billboard.StudsOffset = Vector3.new(0, 2, 0)
+            billboard.AlwaysOnTop = true
+
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Parent = billboard
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.BackgroundTransparency = 1
+            textLabel.Text = player.Name
+            textLabel.TextColor3 = Color3.new(1, 1, 1)
+            textLabel.TextStrokeTransparency = 0.5
+            textLabel.Font = Enum.Font.SourceSansBold
+            textLabel.TextScaled = true
+
+            NameTags[player] = billboard
+        end
+    end
+end
+
+-- Function to remove a nametag
+local function removeNameTag(player)
+    if NameTags[player] then
+        NameTags[player]:Destroy()
+        NameTags[player] = nil
+    end
+end
+
+-- Function to toggle ESP on or off
+local function toggleESP(enabled)
+    ESPEnabled = enabled
+    if ESPEnabled then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= Players.LocalPlayer then
+                createNameTag(player)
+            end
+        end
+    else
+        for player, billboard in pairs(NameTags) do
+            removeNameTag(player)
+        end
+    end
+end
+
+-- Listen for player addition/removal
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        if ESPEnabled then
+            createNameTag(player)
+        end
+    end)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    removeNameTag(player)
+end)
+
+-- Update NameTags when characters are added
+if ESPEnabled then
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character then
+            createNameTag(player)
+        end
+    end
+end
+
+-- GUI Toggle Button Implementation
+local FarmingSection = {} -- Assume this is your GUI section implementation
+
+VisualsSection:AddToggle({
+    Name = "Name Esp",
+    Flag = "FarmingSection_ShowNames",
+    Callback = function(state)
+        toggleESP(state)
+    end
+})
+
+
  
 -- ATM ESP Script with GUI Toggle
 -- Highlights all ATMs in the game world with a toggle button
