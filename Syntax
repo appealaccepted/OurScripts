@@ -320,6 +320,165 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
+
+-- Player ESP with Tracers, Boxes, and Usernames
+-- Highlights all players with tracers, boxes, and their usernames
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+
+local espEnabled = false -- Toggle state
+local tracerColor = Color3.fromRGB(255, 255, 255) -- Tracer color set to white
+local boxColor = Color3.fromRGB(255, 255, 255) -- Box color set to white
+local usernameColor = Color3.fromRGB(255, 255, 255) -- Username color set to white
+local transparency = 0.5 -- General transparency
+local tracers = {} -- Store tracers for players
+local boxes = {} -- Store boxes for players
+local usernames = {} -- Store usernames for players
+
+-- Create ESP elements for a player
+local function createESP(player)
+    local tracer = Drawing.new("Line")
+    tracer.Visible = false
+    tracer.Color = tracerColor
+    tracer.Thickness = 1
+    tracer.Transparency = transparency
+    tracers[player] = tracer
+
+    local box = Drawing.new("Square")
+    box.Visible = false
+    box.Color = boxColor
+    box.Thickness = 1
+    box.Transparency = transparency
+    boxes[player] = box
+
+    local username = Drawing.new("Text")
+    username.Visible = false
+    username.Color = usernameColor
+    username.Size = 14 -- Reduced the size here
+    username.Center = true
+    username.Outline = true
+    usernames[player] = username
+end
+
+-- Remove ESP elements for a player
+local function removeESP(player)
+    if tracers[player] then
+        tracers[player]:Remove()
+        tracers[player] = nil
+    end
+    if boxes[player] then
+        boxes[player]:Remove()
+        boxes[player] = nil
+    end
+    if usernames[player] then
+        usernames[player]:Remove()
+        usernames[player] = nil
+    end
+end
+
+-- Update ESP dynamically
+local function updateESP()
+    for player, tracer in pairs(tracers) do
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= LocalPlayer then
+            local rootPart = player.Character.HumanoidRootPart
+            local head = player.Character:FindFirstChild("Head")
+
+            local partPosition, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+            local headPosition = head and Camera:WorldToViewportPoint(head.Position) or nil
+
+            if onScreen then
+                -- Update tracer
+                tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y) -- Bottom center of the screen
+                tracer.To = Vector2.new(partPosition.X, partPosition.Y)
+                tracer.Visible = espEnabled
+
+                -- Update box
+                local size = Vector3.new(4, 6, 0) -- Adjust size for the box
+                local boxSize = (Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(size.X, size.Y, 0)) - 
+                                 Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(size.X, size.Y, 0))).magnitude
+                boxes[player].Position = Vector2.new(partPosition.X - boxSize / 2, partPosition.Y - boxSize / 2)
+                boxes[player].Size = Vector2.new(boxSize, boxSize * 1.5) -- Adjust height ratio
+                boxes[player].Visible = espEnabled
+
+                -- Update username
+                if headPosition then
+                    usernames[player].Position = Vector2.new(headPosition.X, headPosition.Y - 20)
+                    usernames[player].Text = player.Name
+                    usernames[player].Visible = espEnabled
+                end
+            else
+                tracer.Visible = false
+                boxes[player].Visible = false
+                usernames[player].Visible = false
+            end
+        else
+            tracer.Visible = false
+            boxes[player].Visible = false
+            usernames[player].Visible = false
+        end
+    end
+end
+
+-- Enable ESP
+local function enableESP()
+    espEnabled = true
+    for _, player in ipairs(Players:GetPlayers()) do
+        if not tracers[player] then
+            createESP(player)
+        end
+    end
+end
+
+-- Disable ESP
+local function disableESP()
+    espEnabled = false
+    for _, tracer in pairs(tracers) do
+        tracer.Visible = false
+    end
+    for _, box in pairs(boxes) do
+        box.Visible = false
+    end
+    for _, username in pairs(usernames) do
+        username.Visible = false
+    end
+end
+
+-- Handle player additions
+Players.PlayerAdded:Connect(function(player)
+    createESP(player)
+end)
+
+-- Handle player removals
+Players.PlayerRemoving:Connect(function(player)
+    removeESP(player)
+end)
+
+-- GUI Toggle
+VisualsSection:AddToggle({
+    Name = "Tracer Esp",
+    Flag = "FarmingSection_PlayerESP",
+    Callback = function(state)
+        if state then
+            enableESP()
+        else
+            disableESP()
+        end
+    end,
+})
+
+-- Continuous updates
+RunService.RenderStepped:Connect(function()
+    if espEnabled then
+        updateESP()
+    end
+end)
+
+print("[ESP] Player ESP with Tracers, Boxes, and Usernames loaded.")
+
+
 -- GUI toggle button for ESP
 VisualsSection:AddToggle({
     Name = 'Square Esp',
