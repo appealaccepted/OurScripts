@@ -334,7 +334,7 @@ VisualsSection:AddToggle({
 -- Highlights all ATMs in the game world with a toggle button
 
 local ATMs = {} -- Table to store found ATMs
-local highlightColor = Color3.fromRGB(0, 255, 0) -- Green color for the ESP
+local highlightColor = Color3.fromRGB(0, 0, 0) -- Green color for the ESP
 local espEnabled = false -- Toggle state
 
 -- Function to create a highlight
