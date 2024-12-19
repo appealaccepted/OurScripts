@@ -1280,3 +1280,45 @@ BuyshSection:AddButton({
                      end
                     }) 
 ------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+local miscSection = GeneralTab:CreateSection({
+    Name = "Misc"
+})
+
+
+miscSection:AddButton({
+    Name = "Server Hop",
+    Callback = function()  
+        local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local currentJobId = game.JobId
+local gameId = game.PlaceId
+
+local function hop()
+    while true do
+        local success, result = pcall(function()
+            return game.HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. gameId .. "/servers/Public?limit=100"))
+        end)
+
+        if success and result and result.data then
+            for _, server in ipairs(result.data) do
+                if server.id ~= currentJobId and server.playing < server.maxPlayers then
+                    TeleportService:TeleportToPlaceInstance(gameId, server.id, player)
+                    return
+                end
+            end
+        else
+            warn("Failed to fetch servers.")
+        end
+
+        wait(2) -- Retry after 2 seconds
+    end
+end
+
+hop()
+
+     end
+    }) 
