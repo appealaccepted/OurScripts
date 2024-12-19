@@ -1121,7 +1121,7 @@ tpSection:AddButton({
                                 local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
 		--warn(YourRoot.CFrame)
 		--local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-		local LocationToTP2 = CFrame.new(-350, 340, -555)
+		local LocationToTP2 = CFrame.new(-352, 340, -556)
 		YourRoot.CFrame = LocationToTP2
                              end
                             }) 
