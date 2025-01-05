@@ -69,7 +69,22 @@ end
         end
         })
 
+        FarmingSection:AddButton({
+            Name = "Day&Bright",
+            Callback = function()
+                local lighting = game:GetService("Lighting")
+lighting.TimeOfDay = "1:00:00" -- Sets the time to noon
+lighting.Brightness = 10 -- Adjust brightness to simulate daytime
+lighting.ClockTime = 1 -- Another way to ensure daytime
 
+-- Optional: Reset fog or other effects
+lighting.FogEnd = 100000 -- Removes fog for a clearer view
+
+            end
+            })
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local FarminSection = GeneralTab:CreateSection({
 Name = "Visuals"
 })
