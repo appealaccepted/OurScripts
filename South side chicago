@@ -85,13 +85,21 @@ lighting.FogEnd = 100000 -- Removes fog for a clearer view
 
 
 
-            FarmingSection:AddButton({
-                Name = "No Shadows",
-                Callback = function()
-                    game.Lighting.GlobalShadows = false
-    
-                end
-                })
+FarmingSection:AddButton({
+Name = "No Shadows",
+ Callback = function()
+   game.Lighting.GlobalShadows = false
+        end
+  })
+
+
+
+FarmingSection:AddButton({
+ Name = "Change Graphics",
+ Callback = function()
+    game.Lighting.Technology = Enum.Technology.Compatibility
+   end
+   })
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
