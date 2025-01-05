@@ -761,29 +761,8 @@ local TpsSection = TpsTab:CreateSection({
    })
 
 
-   TpsSection:AddButton({
-    Name = "Poster 1",
-    Callback = function()
-   local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-   --warn(YourRoot.CFrame)
-   --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-    local LocationToTP2 = CFrame.new(32, 8, 244)
-   YourRoot.CFrame = LocationToTP2
-   end
-   })
 
-
-   TpsSection:AddButton({
-    Name = "Poster 2",
-    Callback = function()
-   local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
-   --warn(YourRoot.CFrame)
-   --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
-    local LocationToTP2 = CFrame.new(893, 8, 254)
-   YourRoot.CFrame = LocationToTP2
-   end
-   })
-
+   
    
    TpsSection:AddButton({
     Name = "Chicken&Chips",
@@ -839,7 +818,7 @@ local TpsSection = TpsTab:CreateSection({
     })
 
 local TpssSection = TpssTab:CreateSection({
- Name = "Tps"
+ Name = "Dope Selling"
  })
 
  TpssSection:AddButton({
@@ -898,3 +877,45 @@ local TpssSection = TpssTab:CreateSection({
    end
    })
 
+
+
+
+   local TpssSection = TpssTab:CreateSection({
+    Name = "Studio Farm"
+    })
+
+    TpssSection:AddButton({
+        Name = "Studio Job",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(362, 8, 838)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+    
+
+       TpssSection:AddButton({
+        Name = "Poster 1",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(32, 8, 244)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+
+
+       TpssSection:AddButton({
+        Name = "Poster 2",
+        Callback = function()
+       local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+       --warn(YourRoot.CFrame)
+       --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(893, 8, 254)
+       YourRoot.CFrame = LocationToTP2
+       end
+       })
+    
