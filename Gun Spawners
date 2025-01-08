@@ -160,7 +160,7 @@ local MiscSection = GeneralTab:CreateSection({
 
 
         MiscSection:AddButton({
-            Name = "26",
+            Name = "100",
             Callback = function()
                game.Players.LocalPlayer.PlayerData.Level.Value = 100
             end
