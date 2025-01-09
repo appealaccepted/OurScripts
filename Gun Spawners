@@ -9,7 +9,7 @@ Info = "Discord Server: VzYTJ7Y"
 })
 
 local GeneralTab = PepsisWorld:CreateTab({
-Name = "General"
+Name = "Gun Spawners"
 })
 
 local MiscSection = GeneralTab:CreateSection({
