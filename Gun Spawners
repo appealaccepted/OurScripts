@@ -371,4 +371,32 @@ local UnviewButton = Sigmas:CreateButton({
    end,
 })
 
+local Button = Sigmas:CreateButton({
+    Name = "Teleport",
+    Callback = function()
+        if selectedPlayer and selectedPlayer.Character then
+            -- Get the LocalPlayer's HumanoidRootPart
+            local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+            warn(YourRoot.CFrame)
+        
+            -- Get the selected player's HumanoidRootPart
+            local selectedPlayerRoot = selectedPlayer.Character:FindFirstChild("HumanoidRootPart")
+        
+            if selectedPlayerRoot then
+                -- Get the CFrame of the selected player's HumanoidRootPart
+                local LocationToTP = selectedPlayerRoot.CFrame
+                YourRoot.CFrame = LocationToTP -- Teleport the LocalPlayer to the selected player's location
+            else
+                warn("Selected player does not have a HumanoidRootPart.")
+            end
+        else
+            warn("No selected player or the selected player does not have a character.")
+        end
+        
+    end,
+ })
+
+
+
+
  
