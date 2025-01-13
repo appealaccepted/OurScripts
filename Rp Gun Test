@@ -1,0 +1,518 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Rp Testing",
+    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+    LoadingTitle = "Rp Testing",
+    LoadingSubtitle = "",
+    Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+ 
+    DisableRayfieldPrompts = false,
+    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+ 
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = nil, -- Create a custom folder for your hub/game
+       FileName = "Big Hub"
+    },
+ 
+    Discord = {
+       Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+ 
+    KeySystem = false, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "Untitled",
+       Subtitle = "Key System",
+       Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+ })
+
+
+ local Tab = Window:CreateTab("Combat", 4483362458) -- Title, Image
+
+ local Section = Tab:CreateSection("HitBox")
+
+ local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local originalSizes = {} -- Store original head sizes for all players
+local hitboxEnabled = false
+
+-- Function to scale the head hitbox
+local function scaleHeadHitbox(player, scale)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+        if not originalSizes[player] then
+            originalSizes[player] = head.Size -- Save original size if not already saved
+        end
+        head.Size = originalSizes[player] * scale -- Scale the head
+        head.CanCollide = false -- Disable collision for fairness
+    end
+end
+
+-- Function to reset the head hitbox to its original size
+local function resetHeadHitbox(player)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+        if originalSizes[player] then
+            head.Size = originalSizes[player] -- Reset to original size
+        end
+    end
+end
+
+-- Toggle the hitbox scaling on or off
+local function toggleHitbox(state)
+    hitboxEnabled = state
+    if not hitboxEnabled then
+        -- Reset hitboxes when disabled
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                resetHeadHitbox(player)
+            end
+        end
+    else
+        -- Apply hitbox scaling when enabled
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                scaleHeadHitbox(player, 4) -- Scale once, no need to repeatedly do this
+            end
+        end
+    end
+end
+
+-- Function to handle when a player's character spawns
+local function onCharacterSpawned(player)
+    if hitboxEnabled then
+        local head = player.Character:WaitForChild("Head", 10) -- Wait for head to load
+        if head then
+            scaleHeadHitbox(player, 4) -- Apply the scaling only once when character is loaded
+        end
+    end
+end
+
+-- Handle new players and respawns
+local function onPlayerAdded(player)
+    if player.Character then
+        onCharacterSpawned(player) -- Scale immediately if the character already exists
+    end
+
+    -- Connect character respawn events
+    player.CharacterAdded:Connect(function()
+        onCharacterSpawned(player)
+    end)
+end
+
+-- Connect to existing players
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer then
+        onPlayerAdded(player)
+    end
+end
+
+-- Connect to new players joining the game
+Players.PlayerAdded:Connect(function(player)
+    if player ~= LocalPlayer then
+        onPlayerAdded(player)
+    end
+end)
+
+-- Reset hitbox when players leave
+Players.PlayerRemoving:Connect(function(player)
+    resetHeadHitbox(player)
+end)
+
+-- GUI toggle button for hitbox scaling
+local Toggle = Tab:CreateToggle({
+    Name = "HitBox",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file
+    Callback = function(state)
+        toggleHitbox(state)
+    end,
+})
+
+
+
+
+
+ local Section = Tab:CreateSection("Visuals")
+
+ local Players = game:GetService("Players")
+ local RunService = game:GetService("RunService")
+ local Camera = workspace.CurrentCamera
+ local LocalPlayer = Players.LocalPlayer
+ 
+ local espEnabled = false
+ local playerBoxes = {} -- Store boxes for all players
+ local playerHealthBars = {} -- Store health bars for all players
+ local playerNames = {} -- Store name displays for all players
+ 
+ -- Function to create a box using the Drawing API
+ local function createBox()
+     local box = Drawing.new("Square")
+     box.Thickness = 0.5
+     box.Color = Color3.new(1, 1, 1) -- Red
+     box.Transparency = 1
+     box.Filled = false
+     box.Visible = false
+     return box
+ end
+ 
+ -- Function to create a health bar using the Drawing API
+ local function createHealthBar()
+     local healthBar = Drawing.new("Square")
+     healthBar.Thickness = 0.9
+     healthBar.Color = Color3.new(0, 1, 0) -- Green (for full health)
+     healthBar.Transparency = 1
+     healthBar.Filled = true
+     healthBar.Visible = false
+     return healthBar
+ end
+ 
+ -- Function to create a name tag
+ local function createNameTag()
+     local nameTag = Drawing.new("Text")
+     nameTag.Size = 16 -- Slightly larger
+     nameTag.Color = Color3.new(1, 1, 1) -- White
+     nameTag.Transparency = 1
+     nameTag.Center = true -- Center the text
+     nameTag.Outline = true -- Add an outline for better visibility
+     nameTag.Visible = false
+     return nameTag
+ end
+ 
+ -- Toggle ESP visibility
+ local function toggleESP(state)
+     espEnabled = state
+     if not espEnabled then
+         -- Hide all ESP elements when disabled
+         for _, box in pairs(playerBoxes) do
+             box.Visible = false
+         end
+         for _, healthBar in pairs(playerHealthBars) do
+             healthBar.Visible = false
+         end
+         for _, nameTag in pairs(playerNames) do
+             nameTag.Visible = false
+         end
+     end
+ end
+ 
+ -- Update ESP elements for each player
+ RunService.RenderStepped:Connect(function()
+     if not espEnabled then return end
+ 
+     for _, player in ipairs(Players:GetPlayers()) do
+         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") then
+             local character = player.Character
+             local humanoid = character:FindFirstChild("Humanoid")
+             local head = character:FindFirstChild("Head")
+             local box = playerBoxes[player] or createBox()
+             local healthBar = playerHealthBars[player] or createHealthBar()
+             local nameTag = playerNames[player] or createNameTag()
+ 
+             -- Create the ESP elements if they don't exist
+             if not playerBoxes[player] then playerBoxes[player] = box end
+             if not playerHealthBars[player] then playerHealthBars[player] = healthBar end
+             if not playerNames[player] then playerNames[player] = nameTag end
+ 
+             if head and humanoid and humanoid.Health > 0 then
+                 -- Get the position of the player's head and torso
+                 local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                 local torsoPos = character:FindFirstChild("HumanoidRootPart").Position
+                 local distance = (LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position - torsoPos).Magnitude
+ 
+                 -- Scale down the ESP elements based on distance
+                 local scaleFactor = math.clamp(1 / (distance / 10), 0.4, 1) -- Clamps scale between 0.4 and 1
+ 
+                 if onScreen then
+                     -- Update the box position and size (scaled)
+                     box.Size = Vector2.new(75 * scaleFactor, 100 * scaleFactor) -- Smaller box around the player
+                     box.Position = Vector2.new(screenPos.X - (37.5 * scaleFactor), screenPos.Y - (50 * scaleFactor))
+                     box.Visible = true
+ 
+                     -- Update the health bar position and size (scaled)
+                     local healthPercent = humanoid.Health / humanoid.MaxHealth
+                     healthBar.Size = Vector2.new(5 * scaleFactor, 100 * scaleFactor * healthPercent) -- Height proportional to health
+                     healthBar.Position = Vector2.new(box.Position.X - (10 * scaleFactor), box.Position.Y + (100 * scaleFactor * (1 - healthPercent))) -- Align next to box
+                     healthBar.Color = Color3.new(1 - healthPercent, healthPercent, 0) -- Red to green based on health
+                     healthBar.Visible = true
+ 
+                     -- Update the name tag position (scaled)
+                     nameTag.Position = Vector2.new(screenPos.X, screenPos.Y - (60 * scaleFactor)) -- Above the box
+                     nameTag.Size = 16 * scaleFactor -- Scale the font size
+                     nameTag.Text = player.Name -- Show the player's name
+                     nameTag.Visible = true
+                 else
+                     box.Visible = false
+                     healthBar.Visible = false
+                     nameTag.Visible = false
+                 end
+             else
+                 box.Visible = false
+                 healthBar.Visible = false
+                 nameTag.Visible = false
+             end
+         elseif playerBoxes[player] then
+             -- Hide boxes and tags for players without valid characters
+             playerBoxes[player].Visible = false
+             playerHealthBars[player].Visible = false
+             playerNames[player].Visible = false
+         end
+     end
+ end)
+ 
+ -- Cleanup boxes and tags when players leave
+ Players.PlayerRemoving:Connect(function(player)
+     if playerBoxes[player] then
+         playerBoxes[player]:Remove()
+         playerBoxes[player] = nil
+     end
+     if playerHealthBars[player] then
+         playerHealthBars[player]:Remove()
+         playerHealthBars[player] = nil
+     end
+     if playerNames[player] then
+         playerNames[player]:Remove()
+         playerNames[player] = nil
+     end
+ end)
+ 
+ 
+ -- Player ESP with Tracers, Boxes, and Usernames
+ -- Highlights all players with tracers, boxes, and their usernames
+ 
+ local Players = game:GetService("Players")
+ local LocalPlayer = Players.LocalPlayer
+ local Camera = workspace.CurrentCamera
+ local RunService = game:GetService("RunService")
+ 
+ local espEnabled = false -- Toggle state
+ local tracerColor = Color3.fromRGB(255, 255, 255) -- Tracer color set to white
+ local boxColor = Color3.fromRGB(255, 255, 255) -- Box color set to white
+ local usernameColor = Color3.fromRGB(255, 255, 255) -- Username color set to white
+ local transparency = 0.5 -- General transparency
+ local tracers = {} -- Store tracers for players
+ local boxes = {} -- Store boxes for players
+ local usernames = {} -- Store usernames for players
+ 
+ -- Create ESP elements for a player
+ local function createESP(player)
+     local tracer = Drawing.new("Line")
+     tracer.Visible = false
+     tracer.Color = tracerColor
+     tracer.Thickness = 0.5
+     tracer.Transparency = transparency
+     tracers[player] = tracer
+ 
+     local box = Drawing.new("Square")
+     box.Visible = false
+     box.Color = boxColor
+     box.Thickness = 0.9
+     box.Transparency = transparency
+     boxes[player] = box
+ 
+     local username = Drawing.new("Text")
+     username.Visible = false
+     username.Color = usernameColor
+     username.Size = 9 -- Reduced the size here
+     username.Center = true
+     username.Outline = true
+     usernames[player] = username
+ end
+ 
+ -- Remove ESP elements for a player
+ local function removeESP(player)
+     if tracers[player] then
+         tracers[player]:Remove()
+         tracers[player] = nil
+     end
+     if boxes[player] then
+         boxes[player]:Remove()
+         boxes[player] = nil
+     end
+     if usernames[player] then
+         usernames[player]:Remove()
+         usernames[player] = nil
+     end
+ end
+ 
+ -- Update ESP dynamically
+ local function updateESP()
+     for player, tracer in pairs(tracers) do
+         if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= LocalPlayer then
+             local rootPart = player.Character.HumanoidRootPart
+             local head = player.Character:FindFirstChild("Head")
+ 
+             local partPosition, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+             local headPosition = head and Camera:WorldToViewportPoint(head.Position) or nil
+ 
+             if onScreen then
+                 -- Update tracer
+                 tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y) -- Bottom center of the screen
+                 tracer.To = Vector2.new(partPosition.X, partPosition.Y)
+                 tracer.Visible = espEnabled
+ 
+                 -- Update box
+                 local size = Vector3.new(4, 6, 0) -- Adjust size for the box
+                 local boxSize = (Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(size.X, size.Y, 0)) - 
+                                  Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(size.X, size.Y, 0))).magnitude
+                 boxes[player].Position = Vector2.new(partPosition.X - boxSize / 2, partPosition.Y - boxSize / 2)
+                 boxes[player].Size = Vector2.new(boxSize, boxSize * 1.5) -- Adjust height ratio
+                 boxes[player].Visible = espEnabled
+ 
+                 -- Update username
+                 if headPosition then
+                     usernames[player].Position = Vector2.new(headPosition.X, headPosition.Y - 20)
+                     usernames[player].Text = player.Name
+                     usernames[player].Visible = espEnabled
+                 end
+             else
+                 tracer.Visible = false
+                 boxes[player].Visible = false
+                 usernames[player].Visible = false
+             end
+         else
+             tracer.Visible = false
+             boxes[player].Visible = false
+             usernames[player].Visible = false
+         end
+     end
+ end
+ 
+ -- Enable ESP
+ local function enableESP()
+     espEnabled = true
+     for _, player in ipairs(Players:GetPlayers()) do
+         if not tracers[player] then
+             createESP(player)
+         end
+     end
+ end
+ 
+ -- Disable ESP
+ local function disableESP()
+     espEnabled = false
+     for _, tracer in pairs(tracers) do
+         tracer.Visible = false
+     end
+     for _, box in pairs(boxes) do
+         box.Visible = false
+     end
+     for _, username in pairs(usernames) do
+         username.Visible = false
+     end
+ end
+ 
+ -- Handle player additions
+ Players.PlayerAdded:Connect(function(player)
+     createESP(player)
+ end)
+ 
+ -- Handle player removals
+ Players.PlayerRemoving:Connect(function(player)
+     removeESP(player)
+ end)
+ 
+ -- GUI Toggle
+ local Toggle = Tab:CreateToggle({
+    Name = "Tracers",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(state)
+       if state then
+        enableESP()
+       else
+        disableESP()
+       end
+    end,
+ })
+ 
+ -- Continuous updates
+ RunService.RenderStepped:Connect(function()
+     if espEnabled then
+         updateESP()
+     end
+ end)
+ 
+ print("[ESP] Player ESP with Tracers, Boxes, and Usernames loaded.")
+ 
+ 
+ -- GUI toggle button for ESP
+ local Toggle = Tab:CreateToggle({
+     Name = "Square Esp",
+     CurrentValue = false,
+     Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+     Callback = function(state)
+        toggleESP(state)
+     end,
+  })
+
+
+  local Tabtwo = Window:CreateTab("Teleport", 4483362458) -- Title, Image
+
+
+  local Section = Tabtwo:CreateSection("Teleport")
+
+
+
+  local Button = Tabtwo:CreateButton({
+    Name = "Save Zone",
+    Callback = function()
+        local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+        --warn(YourRoot.CFrame)
+        --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-1014, 55, -340)
+        YourRoot.CFrame = LocationToTP2
+    end,
+ })
+
+
+ local Button = Tabtwo:CreateButton({
+    Name = "Hospital",
+    Callback = function()
+        local YourRoot = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+        --warn(YourRoot.CFrame)
+        --local LocationToTP = workspace["El_belicorp"].HumanoidRootPart.CFrame
+        local LocationToTP2 = CFrame.new(-1025, 53, -1397)
+        YourRoot.CFrame = LocationToTP2
+    end,
+ })
+
+
+
+
+ local Tabtwoo = Window:CreateTab("Player", 4483362458) -- Title, Image
+
+
+  local Section = Tabtwoo:CreateSection("Misc")
+
+
+  local Button = Tabtwoo:CreateButton({
+    Name = "Fast Prompts",
+    Callback = function()
+        local function ProximityPromptDuration(HoldDur)
+            for i,v in workspace:GetDescendants() do
+                 if v:IsA("ProximityPrompt") then
+                     v.HoldDuration = HoldDur
+                 end
+            end
+         end
+        
+         ProximityPromptDuration(0)
+        
+        workspace.DescendantAdded:Connect(function(Added)
+             if Added:IsA("ProximityPrompt") then
+                 ProximityPromptDuration(0)
+             end
+        end)
+    end,
+ })
+
