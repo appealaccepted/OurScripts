@@ -1,7 +1,7 @@
 local Player = game.Players.LocalPlayer
 
 local Whitelisted = {
-    "username",
+    "El_belicorp",
     "dustsans40404",
     "AnotherUsername"
 }
