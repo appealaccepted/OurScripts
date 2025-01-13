@@ -1,3 +1,18 @@
+local Player = game.Players.LocalPlayer
+
+local Whitelisted = {
+    "username",
+    "dustsans40404",
+    "AnotherUsername"
+}
+
+-- Check if the player's name is in the whitelist
+if table.find(Whitelisted, Player.Name) then
+
+else
+    Player:Kick("Not whitelisted")
+end
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
