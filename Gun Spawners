@@ -39,41 +39,30 @@ local Tab = Window:CreateTab("Spawners", 4483362458) -- Title, Image
 local Section = Tab:CreateSection("Gun Spawners")
 
 local Button = Tab:CreateButton({
-    Name = "Glock 19x",
+    Name = "Glock .45",
     Callback = function()
         local args = {
-            [1] = "Glock 19x",
+            [1] = "Glock .45",
     
         }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
     end,
  })
 
  local Button = Tab:CreateButton({
-    Name = "FiveSeven",
+    Name = "Beretta M9",
     Callback = function()
         local args = {
-            [1] = "FiveSeven",
+            [1] = "Beretta M9",
     
         }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
     end,
  })
 
  local Button = Tab:CreateButton({
-    Name = "Glock 17",
+    Name = "Smith & Wesson M&P",
     Callback = function()
         local args = {
-            [1] = "Glock 17",
-    
-        }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
-    end,
- })
-
-
- local Button = Tab:CreateButton({
-    Name = "Glock 26",
-    Callback = function()
-        local args = {
-            [1] = "Glock 26",
+            [1] = "Smith & Wesson M&P",
     
         }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
     end,
@@ -81,20 +70,10 @@ local Button = Tab:CreateButton({
 
 
  local Button = Tab:CreateButton({
-    Name = "HK P7",
+    Name = "Taurus G3C",
     Callback = function()
         local args = {
-            [1] = "HK P7",
-    
-        }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
-    end,
- })
-
- local Button = Tab:CreateButton({
-    Name = "Hellcat RDP 3.8",
-    Callback = function()
-        local args = {
-            [1] = "Hellcat RDP 3.8",
+            [1] = "Taurus G3C",
     
         }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
     end,
@@ -102,21 +81,10 @@ local Button = Tab:CreateButton({
 
 
  local Button = Tab:CreateButton({
-    Name = "Revolver .380 ACP",
+    Name = "Hi-Point C-9",
     Callback = function()
         local args = {
-            [1] = "Revolver .380 ACP",
-    
-        }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
-    end,
- })
-
-
- local Button = Tab:CreateButton({
-    Name = "Ruger SR40",
-    Callback = function()
-        local args = {
-            [1] = "Ruger SR40",
+            [1] = "Hi-Point C-9",
     
         }    game:GetService("ReplicatedStorage").Remotes.GiveGun:FireServer(unpack(args)) 
     end,
