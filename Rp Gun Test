@@ -81,7 +81,7 @@ local function toggleHitbox(state)
         -- Apply hitbox scaling when enabled
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
-                scaleHeadHitbox(player, 4) -- Scale once, no need to repeatedly do this
+                scaleHeadHitbox(player, 2) -- Scale once, no need to repeatedly do this
             end
         end
     end
@@ -92,7 +92,7 @@ local function onCharacterSpawned(player)
     if hitboxEnabled then
         local head = player.Character:WaitForChild("Head", 10) -- Wait for head to load
         if head then
-            scaleHeadHitbox(player, 4) -- Apply the scaling only once when character is loaded
+            scaleHeadHitbox(player, 2) -- Apply the scaling only once when character is loaded
         end
     end
 end
@@ -487,12 +487,82 @@ local Toggle = Tab:CreateToggle({
  })
 
 
-
-
  local Tabtwoo = Window:CreateTab("Player", 4483362458) -- Title, Image
 
 
   local Section = Tabtwoo:CreateSection("Misc")
+
+
+  local Slider = Tabtwoo:CreateSlider({
+    Name = "WalkSpeed",
+    Range = {0, 500},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 0,
+    Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+    end,
+ })
+
+
+ local Slider = Tabtwoo:CreateSlider({
+    Name = "JumpPower",
+    Range = {0, 500},
+    Increment = 1,
+    Suffix = "Power",
+    CurrentValue = 0,
+    Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
+    end,
+ })
+
+
+ -- Assuming you're in a LocalScript
+
+-- Reference to the player and their character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define noclip and clip functions
+local function enableNoclip()
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false -- Disable collision for all parts of the character
+        end
+    end
+end
+
+local function disableNoclip()
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = true -- Enable collision for all parts of the character
+        end
+    end
+end
+
+-- Example UI Toggle (using a fictional UI library)
+local Toggle = Tabtwoo:CreateToggle({
+    Name = "Noclip",
+    CurrentValue = false, -- Starts with noclip off
+    Flag = "NoclipToggle", -- Identifier
+    Callback = function(Value)
+        if Value then
+            enableNoclip()  -- Noclip enabled
+        else
+            disableNoclip() -- Noclip disabled
+        end
+    end,
+})
+
+-- Listen for character respawns and reapply noclip if the toggle is on
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    if Toggle.CurrentValue then
+        enableNoclip()
+    end
+end)
 
 
   local Button = Tabtwoo:CreateButton({
@@ -515,4 +585,5 @@ local Toggle = Tab:CreateToggle({
         end)
     end,
  })
+
 
