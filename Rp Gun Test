@@ -81,7 +81,7 @@ local function toggleHitbox(state)
         -- Apply hitbox scaling when enabled
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
-                scaleHeadHitbox(player, 2) -- Scale once, no need to repeatedly do this
+                scaleHeadHitbox(player, 4) -- Scale once, no need to repeatedly do this
             end
         end
     end
@@ -92,7 +92,7 @@ local function onCharacterSpawned(player)
     if hitboxEnabled then
         local head = player.Character:WaitForChild("Head", 10) -- Wait for head to load
         if head then
-            scaleHeadHitbox(player, 2) -- Apply the scaling only once when character is loaded
+            scaleHeadHitbox(player, 4) -- Apply the scaling only once when character is loaded
         end
     end
 end
