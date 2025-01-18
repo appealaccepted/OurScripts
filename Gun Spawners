@@ -3,7 +3,7 @@ local Player = game.Players.LocalPlayer
 local Whitelisted = {
     "El_belicorp",
     "dustsans40404",
-    "AnotherUsername"
+    "fintanfedoras"
 }
 
 -- Check if the player's name is in the whitelist
