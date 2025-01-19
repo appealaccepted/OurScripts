@@ -2,7 +2,7 @@ local Player = game.Players.LocalPlayer
 
 local Whitelisted = {
     "El_belicorp",
-    "dustsans40404",
+    "",
     "fintanfedoras"
 }
 
